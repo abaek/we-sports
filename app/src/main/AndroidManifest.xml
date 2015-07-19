@@ -20,6 +20,10 @@
             android:name=".MapActivity"
             android:label="@string/title_activity_map" >
         </activity>
+        <activity
+            android:name=".PusherActivity"
+            android:label="@string/title_activity_pusher" >
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -6,4 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_map">Map</string>
     <string name="loading_text">Loading...</string>
+    <string name="title_activity_pusher">PusherActivity</string>
+
 </resources>
