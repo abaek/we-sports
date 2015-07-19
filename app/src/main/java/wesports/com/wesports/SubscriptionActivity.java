@@ -12,11 +12,18 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.pusher.client.Pusher;
+import com.pusher.client.channel.Channel;
+import com.pusher.client.channel.SubscriptionEventListener;
 
 
 public class SubscriptionActivity extends Activity {
 
-  LinearLayout layout;
+  private LinearLayout layout;
+  SharedPreferences settings;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +32,7 @@ public class SubscriptionActivity extends Activity {
 
     layout = (LinearLayout) findViewById(R.id.subscription_layout);
 
-    SharedPreferences settings = this.getPreferences(0);
+    settings = this.getPreferences(0);
     final SharedPreferences.Editor editor = settings.edit();
 
     // Restore preferences
@@ -59,6 +66,8 @@ public class SubscriptionActivity extends Activity {
       verticalSpacingLayout.setMargins(10, 0, 0, 10);
       layout.addView(view);
     }
+
+    setUpPusher();
   }
 
 
@@ -87,5 +96,28 @@ public class SubscriptionActivity extends Activity {
   public void onAddGame(View view) {
     Intent intent = new Intent(this, HomeActivity.class);
     startActivity(intent);
+  }
+
+  void setUpPusher() {
+    Pusher pusher = new Pusher(BuildConfig.PUSHER_KEY);
+    pusher.connect();
+
+    // Subscribe to channel.
+    Channel channel = pusher.subscribe("notifications");
+
+    // Listen for specific events.
+    channel.bind("create", new SubscriptionEventListener() {
+      @Override
+      public void onEvent(String channel, String event, String data) {
+        Gson gson = new Gson();
+        final Game game = gson.fromJson(data, Game.class);
+
+        // If you are subscribed to the newly created game, you are notified.
+        if (settings.getBoolean(game.type, false)) {
+          Toast.makeText(getApplicationContext(), "Found event:" + game.name, Toast.LENGTH_LONG).show();
+        }
+      }
+    });
+
   }
 }

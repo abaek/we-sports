@@ -1,52 +1,28 @@
 package wesports.com.wesports;
 
-import com.google.android.gms.location.places.Place;
-
-import java.util.Date;
-
-/**
- * Created by Eric on 2015-07-18.
- */
-
 public class Game {
-    String game;
-    Place place;
-    int minPeople;
-    int maxPeople;
-    Date date;
-    String description;
-    Bet bet;
+  String type;
+  String name;
+  String desc;
+  People people;
+  Long date;
+  Place place;
+  int bet;
+  Contact contact;
 
-    class Bet{
-        boolean paymentComplete;
-        int amount;
+  class Place {
+    double lon;
+    double lat;
+  }
 
-        Bet(int amount){
-            this.paymentComplete = false;
-            this.amount = amount;
-        }
+  class People {
+    int min;
+    int max;
+  }
 
-        void togglePaymentComplete(){
-            paymentComplete = !paymentComplete;
-        }
-
-    }
-
-    public Game(
-            String game,
-            Place place,
-            int minPeople,
-            int maxPeople,
-            Date date,
-            String description,
-            int betAmount
-    ){
-        this.game = game;
-        this.place = place;
-        this.minPeople = minPeople;
-        this.maxPeople = maxPeople;
-        this.date = date;
-        this.description = description;
-        this.bet = new Bet(betAmount);
-    }
+  class Contact {
+    String phone;
+    String email;
+    String name;
+  }
 }
