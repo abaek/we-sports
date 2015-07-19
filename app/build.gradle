@@ -1,9 +1,21 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 def PAYPAL_CLIENT_ID = '"' + PaypalClientIdProp + '"' ?: '"Define Paypal client ID"';
 def PAYPAL_SECRET = '"' + PaypalSecretProp + '"' ?: '"Define Paypal secret"';
 def PUSHER_KEY = '"' + PusherKeyProp + '"' ?: '"Define Pusher key"';
 def PUSHER_SECRET_KEY = '"' + PusherSecretKeyProp + '"' ?: '"Define Pusher secret key"';
+def TWITTER_KEY = '"' + TwitterKeyProp + '"' ?: '"Define twitter  key"';
+def TWITTER_SECRET = '"' + TwitterSecretProp + '"' ?: '"Define twitter secret key"';
 
 android {
     compileSdkVersion 21
@@ -24,6 +36,8 @@ android {
             buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
             buildConfigField 'String', 'PUSHER_KEY', PUSHER_KEY
             buildConfigField 'String', 'PUSHER_SECRET_KEY', PUSHER_SECRET_KEY
+            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
+            buildConfigField 'String', 'TWITTER_SECRET', TWITTER_SECRET
         }
 
         debug{
@@ -31,12 +45,15 @@ android {
             buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
             buildConfigField 'String', 'PUSHER_KEY', PUSHER_KEY
             buildConfigField 'String', 'PUSHER_SECRET_KEY', PUSHER_SECRET_KEY
+            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
+            buildConfigField 'String', 'TWITTER_SECRET', TWITTER_SECRET
         }
     }
 }
 
 repositories {
     maven { url 'http://clojars.org/repo' }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -47,5 +64,8 @@ dependencies {
     compile 'com.appyvet:materialrangebar:1.0'
     compile 'com.wdullaer:materialdatetimepicker:1.4.1'
     compile files('lib/PayPalAndroidSDK-2.9.10.jar')
+    compile('com.digits.sdk.android:digits:1.6.2@aar') {
+        transitive = true;
+    }
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
 }
