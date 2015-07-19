@@ -131,7 +131,7 @@ public class HomeActivity extends Activity implements
     });
 
     // set spinner values
-    Spinner spinner = (Spinner) findViewById(R.id.game_spinner);
+    spinner = (Spinner) findViewById(R.id.game_spinner);
     // Create an ArrayAdapter using the string array and a default spinner layout
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.games_array, android.R.layout.simple_spinner_item);
@@ -251,7 +251,7 @@ public class HomeActivity extends Activity implements
 
           JSONObject message = new JSONObject();
 
-          message.put("type", "basketball");
+          message.put("type", spinner.getSelectedItem().toString());
           message.put("name", mNameOfEventEdit.getText().toString());
           message.put("desc", mDetailsEdit.getText().toString());
           message.put("date", cal.getTimeInMillis() / 1000);
@@ -283,6 +283,7 @@ public class HomeActivity extends Activity implements
     });
 
     thread.start();
+      finish();
   }
 
   @Override

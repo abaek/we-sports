@@ -15,5 +15,7 @@
     <string name="details_prompt">Any additional details?</string>
     <string name="create_game_button">Create Game</string>
     <string name="name_of_event">Name of Event</string>
+    <string name="title_activity_subscription">SubscriptionActivity</string>
+    <string name="add_game_text">Propose Event</string>
 
 </resources>
