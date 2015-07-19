@@ -15,6 +15,22 @@ public class Game {
     int maxPeople;
     Date date;
     String description;
+    Bet bet;
+
+    class Bet{
+        boolean paymentComplete;
+        int amount;
+
+        Bet(int amount){
+            this.paymentComplete = false;
+            this.amount = amount;
+        }
+
+        void togglePaymentComplete(){
+            paymentComplete = !paymentComplete;
+        }
+
+    }
 
     public Game(
             String game,
@@ -22,7 +38,8 @@ public class Game {
             int minPeople,
             int maxPeople,
             Date date,
-            String description
+            String description,
+            int betAmount
     ){
         this.game = game;
         this.place = place;
@@ -30,5 +47,6 @@ public class Game {
         this.maxPeople = maxPeople;
         this.date = date;
         this.description = description;
+        this.bet = new Bet(betAmount);
     }
 }
