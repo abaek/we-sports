@@ -3,6 +3,7 @@ package wesports.com.wesports;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,14 +14,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.appyvet.rangebar.RangeBar;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.paypal.android.sdk.payments.PayPalAuthorization;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import org.json.JSONException;
+
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,6 +53,14 @@ public class HomeActivity extends Activity implements
 
     protected static final String TAG = "HomeActivity";
     private static final int PLACE_PICKER_REQUEST = 1;
+
+    private static final String CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_NO_NETWORK;
+    private static final String CONFIG_CLIENT_ID = BuildConfig.PAYPAL_CLIENT_ID;
+    private static final int REQUEST_CODE_PAYMENT = 2;
+
+    private static PayPalConfiguration config = new PayPalConfiguration()
+            .environment(CONFIG_ENVIRONMENT)
+            .clientId(CONFIG_CLIENT_ID);
 
     private Place place;
     Calendar cal;
@@ -88,6 +111,11 @@ public class HomeActivity extends Activity implements
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+
+        // PayPal stuff
+        Intent intent = new Intent(this, PayPalService.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        startService(intent);
     }
 
     @Override
@@ -109,6 +137,52 @@ public class HomeActivity extends Activity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private PayPalPayment getThingToBuy(String paymentIntent) {
+        return new PayPalPayment(new BigDecimal("1.75"), "USD", "Prize Money",
+                paymentIntent);
+    }
+
+    public void onBuyPressed(View pressed) {
+        /*
+         * PAYMENT_INTENT_SALE will cause the payment to complete immediately.
+         * Change PAYMENT_INTENT_SALE to
+         *   - PAYMENT_INTENT_AUTHORIZE to only authorize payment and capture funds later.
+         *   - PAYMENT_INTENT_ORDER to create a payment for authorization and capture
+         *     later via calls from your server.
+         *
+         * Also, to include additional payment details and an item list, see getStuffToBuy() below.
+         */
+        PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+
+        /*
+         * See getStuffToBuy(..) for examples of some available payment options.
+         */
+
+        Intent intent = new Intent(this, PaymentActivity.class);
+
+        // send the same configuration for restart resiliency
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+
+        startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+    }
+
+    public void locationSelect(View view) {
+                try {
+                       PlacePicker.IntentBuilder intentBuilder =
+                                        new PlacePicker.IntentBuilder();
+                       // intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
+                               Intent intent = intentBuilder.build(this);
+                       startActivityForResult(intent, PLACE_PICKER_REQUEST);
+
+                           } catch (GooglePlayServicesRepairableException e) {
+                       e.printStackTrace();
+                   } catch (GooglePlayServicesNotAvailableException e) {
+                       e.printStackTrace();
+                   }
+            }
+
     @Override
     protected void onActivityResult(int requestCode,
                                     int resultCode, Intent data) {
@@ -120,6 +194,39 @@ public class HomeActivity extends Activity implements
             final CharSequence name = place.getName();
             mLocationButton.setText(name);
 
+        } else if (requestCode == REQUEST_CODE_PAYMENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                PaymentConfirmation confirm =
+                        data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                if (confirm != null) {
+                    try {
+                        Log.i(TAG, confirm.toJSONObject().toString(4));
+                        Log.i(TAG, confirm.getPayment().toJSONObject().toString(4));
+                        /**
+                         *  TODO: send 'confirm' (and possibly confirm.getPayment() to your server for verification
+                         * or consent completion.
+                         * See https://developer.paypal.com/webapps/developer/docs/integration/mobile/verify-mobile-payment/
+                         * for more details.
+                         *
+                         * For sample mobile backend interactions, see
+                         * https://github.com/paypal/rest-api-sdk-python/tree/master/samples/mobile_backend
+                         */
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "PaymentConfirmation info received from PayPal", Toast.LENGTH_LONG)
+                                .show();
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "an extremely unlikely failure occurred: ", e);
+                    }
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Log.i(TAG, "The user canceled.");
+            } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+                Log.i(
+                        TAG,
+                        "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -160,6 +267,13 @@ public class HomeActivity extends Activity implements
         Date date = cal.getTime();
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
         mTimeButton.setText(timeFormat.format(date));
+    }
+
+    @Override
+    public void onDestroy() {
+        // Stop service when done
+        stopService(new Intent(this, PayPalService.class));
+        super.onDestroy();
     }
 
     @Override
