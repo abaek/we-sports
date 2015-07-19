@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="games_array">
+        <item>Basketball</item>
+        <item>Soccer</item>
+        <item>Football</item>
+        <item>Volleyball</item>
+        <item>Tennis</item>
+        <item>Super Smash Bros</item>
+    </string-array>
+</resources>
