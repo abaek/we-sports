@@ -3,7 +3,6 @@ package wesports.com.wesports;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,16 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appyvet.rangebar.RangeBar;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -30,26 +24,17 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 
 public class HomeActivity extends Activity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
         TimePickerDialog.OnTimeSetListener,
         DatePickerDialog.OnDateSetListener{
-
-    protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
-
-    protected TextView mLatitudeText;
-    protected TextView mLongitudeText;
 
     private Button mLocationButton;
     private Button mDateButton;
     private Button mTimeButton;
     private TextView mRangeText;
-    private RangeBar mRangeBar;
+    private EditText mDetailsEdit;
 
     protected static final String TAG = "HomeActivity";
     private static final int PLACE_PICKER_REQUEST = 1;
@@ -62,13 +47,11 @@ public class HomeActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mLatitudeText = (TextView) findViewById(R.id.latitude);
-        mLongitudeText = (TextView) findViewById(R.id.longtitude);
-        buildGoogleApiClient();
-
         mDateButton = (Button) findViewById(R.id.date_button);
         mTimeButton = (Button) findViewById(R.id.time_button);
         mLocationButton = (Button) findViewById(R.id.location_button);
+
+        mDetailsEdit = (EditText) findViewById(R.id.details_edit);
 
         // set date and time text
         cal = Calendar.getInstance();
@@ -79,7 +62,7 @@ public class HomeActivity extends Activity implements
         mTimeButton.setText(timeFormat.format(date));
 
         // set range bar values
-        mRangeBar = (RangeBar) findViewById(R.id.rangebar);
+        RangeBar mRangeBar = (RangeBar) findViewById(R.id.rangebar);
         mRangeText = (TextView) findViewById(R.id.rangetext);
         mRangeText.setText(6 + " - " + 10);
         mRangeBar.setRangePinsByIndices(6, 10);
@@ -88,9 +71,9 @@ public class HomeActivity extends Activity implements
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
                                               int rightPinIndex,
                                               String leftPinValue, String rightPinValue) {
-                if(leftPinValue == rightPinValue){
+                if (leftPinValue == rightPinValue) {
                     mRangeText.setText(leftPinValue);
-                }else {
+                } else {
                     mRangeText.setText(leftPinValue + " - " + rightPinValue);
                 }
             }
@@ -106,28 +89,6 @@ public class HomeActivity extends Activity implements
 // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
     }
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,43 +107,6 @@ public class HomeActivity extends Activity implements
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        } else {
-            Toast.makeText(this, "No location detected", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
-    }
-
-    public void locationSelect(View view) {
-        try {
-            PlacePicker.IntentBuilder intentBuilder =
-                    new PlacePicker.IntentBuilder();
-            // intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
-            Intent intent = intentBuilder.build(this);
-            startActivityForResult(intent, PLACE_PICKER_REQUEST);
-
-        } catch (GooglePlayServicesRepairableException e) {
-            e.printStackTrace();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

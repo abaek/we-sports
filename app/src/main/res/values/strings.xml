@@ -11,4 +11,5 @@
     <string name="location_select">Select Location</string>
     <string name="num_people_prompt">How many people are needed?</string>
     <string name="datetime_prompt">When do you want to play?</string>
+    <string name="details_prompt">Any additional details?</string>
 </resources>

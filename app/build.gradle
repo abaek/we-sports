@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+def PAYPAL_CLIENT_ID = '"' + PaypalClientIdProp + '"' ?: '"Define Paypal client ID"';
+def PAYPAL_SECRET = '"' + PaypalSecretProp + '"' ?: '"Define Paypal secret"';
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -12,17 +15,22 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug{
+            buildConfigField 'String', 'PAYPAL_CLIENT_ID', PAYPAL_CLIENT_ID
+            buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
+        }
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'PAYPAL_CLIENT_ID', PAYPAL_CLIENT_ID
+            buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.appyvet:materialrangebar:1.0'
     compile 'com.wdullaer:materialdatetimepicker:1.4.1'
+    compile files('lib/PayPalAndroidSDK-2.9.10.jar')
 }
