@@ -13,7 +13,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -28,4 +28,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.pusher:pusher-java-client:0.3.3'
+    compile 'com.appyvet:materialrangebar:1.0'
+    compile 'com.wdullaer:materialdatetimepicker:1.4.1'
 }
