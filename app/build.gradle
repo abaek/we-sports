@@ -26,10 +26,15 @@ android {
     }
 }
 
+repositories {
+    maven { url 'http://clojars.org/repo' }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.pusher:pusher-java-client:0.3.3'
     compile 'com.appyvet:materialrangebar:1.0'
     compile 'com.wdullaer:materialdatetimepicker:1.4.1'
     compile files('lib/PayPalAndroidSDK-2.9.10.jar')
