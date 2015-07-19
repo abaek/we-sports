@@ -57,13 +57,12 @@ public class HomeActivity extends Activity implements
 
   private PrivateChannel channel;
 
-  protected TextView mLatitudeText;
-  protected TextView mLongitudeText;
   private Button mLocationButton;
   private Button mDateButton;
   private Button mTimeButton;
   private TextView mRangeText;
   private EditText mDetailsEdit;
+  private EditText mNameOfEventEdit;
 
   private double latitude;
   private double longitude;
@@ -77,11 +76,14 @@ public class HomeActivity extends Activity implements
           .clientId(CONFIG_CLIENT_ID);
 
   private Place place;
-  Calendar cal;
+  private Calendar cal;
   private Spinner spinner;
 
   private int leftRange;
   private int rightRange;
+
+  private int timeSeconds;
+  private int dateSeconds;
 
   protected static final String TAG = "HomeActivity";
   private static final int PLACE_PICKER_REQUEST = 1;
@@ -95,6 +97,8 @@ public class HomeActivity extends Activity implements
     mDateButton = (Button) findViewById(R.id.date_button);
     mTimeButton = (Button) findViewById(R.id.time_button);
     mLocationButton = (Button) findViewById(R.id.location_button);
+    mDetailsEdit = (EditText) findViewById(R.id.details_edit);
+    mNameOfEventEdit = (EditText) findViewById(R.id.name_of_event_edit);
 
     // set date and time text
     cal = Calendar.getInstance();
@@ -248,9 +252,9 @@ public class HomeActivity extends Activity implements
           JSONObject message = new JSONObject();
 
           message.put("type", "basketball");
-          message.put("name", "b-ball");
-          message.put("desc", "5pm");
-          message.put("date", 1437279239);
+          message.put("name", mNameOfEventEdit.getText().toString());
+          message.put("desc", mDetailsEdit.getText().toString());
+          message.put("date", cal.getTimeInMillis() / 1000);
           message.put("bet", 799);
 
           JSONObject people = new JSONObject();
@@ -265,9 +269,9 @@ public class HomeActivity extends Activity implements
           message.put("place", place);
 
           JSONObject contact = new JSONObject();
-          contact.put("phone", "2o312u");
-          contact.put("email", "qbwlkjdbdaf");
-          contact.put("name", "Andy");
+          contact.put("phone", "");
+          contact.put("email", "");
+          contact.put("name", "");
           message.put("contact", contact);
 
           httppost.setEntity(new StringEntity(message.toString(), "UTF-8"));
@@ -289,6 +293,8 @@ public class HomeActivity extends Activity implements
             && resultCode == Activity.RESULT_OK) {
 
       place = PlacePicker.getPlace(data, this);
+      latitude = place.getLatLng().latitude;
+      longitude = place.getLatLng().longitude;
       final CharSequence name = place.getName();
       mLocationButton.setText(name);
 

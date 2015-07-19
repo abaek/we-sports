@@ -14,5 +14,6 @@
     <string name="title_activity_pusher">PusherActivity</string>
     <string name="details_prompt">Any additional details?</string>
     <string name="create_game_button">Create Game</string>
+    <string name="name_of_event">Name of Event</string>
 
 </resources>
