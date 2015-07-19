@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -106,7 +107,7 @@ public class SubscriptionActivity extends Activity {
     Channel channel = pusher.subscribe("notifications");
 
     // Listen for specific events.
-    channel.bind("create", new SubscriptionEventListener() {
+    channel.bind("new_event", new SubscriptionEventListener() {
       @Override
       public void onEvent(String channel, String event, String data) {
         Gson gson = new Gson();
@@ -114,7 +115,15 @@ public class SubscriptionActivity extends Activity {
 
         // If you are subscribed to the newly created game, you are notified.
         if (settings.getBoolean(game.type, false)) {
-          Toast.makeText(getApplicationContext(), "Found event:" + game.name, Toast.LENGTH_LONG).show();
+          // Do something significant here.
+          Log.d("Pusher Recieved", "Found event: " + game.name);
+          // Make toast.
+          runOnUiThread(new Runnable() {
+            public void run() {
+              Toast.makeText(getApplicationContext(), "Found event: " + game.name, Toast.LENGTH_LONG).show();
+            }
+          });
+
         }
       }
     });

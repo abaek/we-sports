@@ -229,7 +229,8 @@ public class HomeActivity extends Activity implements
           Gson gson = new Gson();
           String jsonString = gson.toJson(game);
 
-          httppost.setEntity(new StringEntity(jsonString, "UTF-8"));
+          httppost.setEntity(new StringEntity(jsonString));
+          httppost.addHeader("content-type", "application/json");
           HttpResponse response = httpclient.execute(httppost);
         } catch (Exception e) {
           Log.d("HTTP", e.toString());
