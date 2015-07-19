@@ -73,9 +73,7 @@ public class SubscriptionActivity extends FragmentActivity {
       mPager.setAdapter(mPagerAdapter);
       PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
       tabs.setViewPager(mPager);
-
-
-
+      settings = getPreferences(0);
     setUpPusher();
   }
 
@@ -121,6 +119,7 @@ public class SubscriptionActivity extends FragmentActivity {
         Gson gson = new Gson();
         final Game game = gson.fromJson(data, Game.class);
 
+          Log.e("SubscriptionActivity", "GAME TYPE: " + game.type);
         // If you are subscribed to the newly created game, you are notified.
         if (settings.getBoolean(game.type, false)) {
           // Do something significant here.
