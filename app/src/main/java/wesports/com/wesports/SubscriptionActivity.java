@@ -15,15 +15,44 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsAuthButton;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import io.fabric.sdk.android.Fabric;
+
 
 public class SubscriptionActivity extends Activity {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
+    private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET;
+
 
     LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig), new Digits());
         setContentView(R.layout.activity_subscription);
+
+        DigitsAuthButton digitsButton = (DigitsAuthButton) findViewById(R.id.auth_button);
+        digitsButton.setCallback(new AuthCallback() {
+                                     @Override
+                                     public void success(DigitsSession session, String phoneNumber) {
+                                         // Do something with the session
+                                     }
+
+                                     @Override
+                                     public void failure(DigitsException exception) {
+                                         // Do something on failure
+                                     }
+                                 });
 
         layout = (LinearLayout) findViewById(R.id.subscription_layout);
 
