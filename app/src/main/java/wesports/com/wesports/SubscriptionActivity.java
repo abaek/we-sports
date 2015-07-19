@@ -25,48 +25,48 @@ import com.pusher.client.channel.SubscriptionEventListener;
 public class SubscriptionActivity extends FragmentActivity {
 
   public SharedPreferences settings;
-    private ViewPager mPager;
-    private PagerAdapter mPagerAdapter;
+  private ViewPager mPager;
+  private PagerAdapter mPagerAdapter;
 
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        private final String[] TITLES = {
-                getString(R.string.tab_notifications),
-                getString(R.string.tab_subscriptions)
-        };
+  private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+    private final String[] TITLES = {
+            getString(R.string.tab_notifications),
+            getString(R.string.tab_subscriptions)
+    };
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return ScreenSlidePageFragment.create(position);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
+    public ScreenSlidePagerAdapter(FragmentManager fm) {
+      super(fm);
     }
+
+    public CharSequence getPageTitle(int position) {
+      return TITLES[position];
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+      return ScreenSlidePageFragment.create(position);
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+      return POSITION_NONE;
+    }
+
+    @Override
+    public int getCount() {
+      return TITLES.length;
+    }
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_subscription);
-      mPager = (ViewPager) findViewById(R.id.pager);
-      mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-      mPager.setAdapter(mPagerAdapter);
-      PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-      tabs.setViewPager(mPager);
+    mPager = (ViewPager) findViewById(R.id.pager);
+    mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+    mPager.setAdapter(mPagerAdapter);
+    PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+    tabs.setViewPager(mPager);
 
 
     settings = getPreferences(0);
@@ -116,7 +116,7 @@ public class SubscriptionActivity extends FragmentActivity {
         Gson gson = new Gson();
         final Game game = gson.fromJson(data, Game.class);
 
-          Log.e("SubscriptionActivity", "GAME TYPE: " + game.type);
+        Log.e("SubscriptionActivity", "GAME TYPE: " + game.type);
         // If you are subscribed to the newly created game, you are notified.
         if (settings.getBoolean(game.type, false)) {
           // Do something significant here.
