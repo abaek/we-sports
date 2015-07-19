@@ -1,9 +1,7 @@
 package wesports.com.wesports;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,10 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -75,6 +69,7 @@ public class SubscriptionActivity extends FragmentActivity {
       tabs.setViewPager(mPager);
 
 
+    settings = getPreferences(0);
 
     setUpPusher();
   }
