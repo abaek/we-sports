@@ -82,7 +82,6 @@ public class ScreenSlidePageFragment extends Fragment {
 
   public void loadGames(final ListView listview) {
       try {
-        HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/events");
 
         ArrayList<String> types = new ArrayList<>();
@@ -99,17 +98,24 @@ public class ScreenSlidePageFragment extends Fragment {
         httppost.setEntity(new StringEntity(jsonString));
         httppost.addHeader("content-type", "application/json");
 
-        HttpResponse response = httpclient.execute(httppost);
-        String json = EntityUtils.toString(response.getEntity());
+        LoadGamesAsyncTask loadGamesTask =
+            new LoadGamesAsyncTask(httppost, new LoadGamesAsyncTask.Callback(){
 
-        Gson gson = new Gson();
-        TypeToken<List<Game>> token = new TypeToken<List<Game>>(){};
-        List<Game> gamesList = gson.fromJson(json, token.getType());
+                @Override
+                public void onComplete(Object o, Error error) {
+                    if(error != null){
+                        Log.e("LoadGamesTask", error.getMessage());
+                        return;
+                    }
+                    List<Game> gamesList = (List<Game>) o;
+                    Log.e("LoadGamesTask", "" + gamesList.size());
+                    GamesAdapter adapter = new GamesAdapter(getActivity(), (ArrayList) gamesList);
+                    // Attach the adapter to a ListView
+                    listview.setAdapter(adapter);
+                }
+            });
 
-        GamesAdapter adapter = new GamesAdapter(getActivity(), (ArrayList) gamesList);
-        // Attach the adapter to a ListView
-        listview.setAdapter(adapter);
-
+          loadGamesTask.execute();
       } catch (Exception e) {
         Log.d("HTTP", e.toString());
       }
