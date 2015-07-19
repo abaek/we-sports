@@ -45,7 +45,7 @@ public class PusherActivity extends Activity {
     // Create a new Pusher instance
     HttpAuthorizer authorizer = new HttpAuthorizer("http://we-sports.herokuapp.com/pusher/auth");
     PusherOptions options = new PusherOptions().setAuthorizer(authorizer);
-    Pusher pusher = new Pusher("", options);
+    Pusher pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
 
     pusher.connect(new ConnectionEventListener() {
       @Override

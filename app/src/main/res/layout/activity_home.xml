@@ -1,18 +1,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".HomeActivity"
-    android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              tools:context=".HomeActivity"
+              android:orientation="vertical">
+
     <TextView
         android:id="@+id/latitude"
         android:text="@string/loading_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
+
     <TextView
         android:id="@+id/longtitude"
         android:text="@string/loading_text"
@@ -24,42 +26,44 @@
         android:text="@string/game_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"/>
 
     <Spinner
         android:id="@+id/game_spinner"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:text="@string/location_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"/>
+
     <Button
         android:id="@+id/location_button"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/location_select"
-        android:onClick="locationSelect" />
+        android:onClick="locationSelect"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-    <TextView
-        android:text="@string/num_people_prompt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:layout_marginRight="10dp"/>
 
-    <TextView
-        android:id="@+id/rangetext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        <TextView
+            android:text="@string/num_people_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginRight="10dp"/>
+
+        <TextView
+            android:id="@+id/rangetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <com.appyvet.rangebar.RangeBar
@@ -77,22 +81,31 @@
         android:text="@string/datetime_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/date_button"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:onClick="setDate" />
+            android:onClick="setDate"/>
 
         <Button
             android:id="@+id/time_button"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:onClick="setTime" />
-        </LinearLayout>
-    
+            android:onClick="setTime"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_game_button"
+        android:onClick="createGame"/>
+
 </LinearLayout>
