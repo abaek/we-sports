@@ -20,19 +20,12 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
-import com.pusher.client.Pusher;
-import com.pusher.client.PusherOptions;
-import com.pusher.client.channel.PrivateChannel;
-import com.pusher.client.channel.PrivateChannelEventListener;
-import com.pusher.client.connection.ConnectionEventListener;
-import com.pusher.client.connection.ConnectionState;
-import com.pusher.client.connection.ConnectionStateChange;
-import com.pusher.client.util.HttpAuthorizer;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -43,7 +36,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -55,7 +47,6 @@ public class HomeActivity extends Activity implements
         TimePickerDialog.OnTimeSetListener,
         DatePickerDialog.OnDateSetListener {
 
-  private PrivateChannel channel;
 
   private Button mLocationButton;
   private Button mDateButton;
@@ -139,42 +130,8 @@ public class HomeActivity extends Activity implements
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
     spinner.setAdapter(adapter);
-    setUpPusher();
-
   }
 
-  void setUpPusher() {
-    // Create a new Pusher instance
-    HttpAuthorizer authorizer = new HttpAuthorizer("http://we-sports.herokuapp.com/pusher/auth");
-    PusherOptions options = new PusherOptions().setAuthorizer(authorizer);
-    Pusher pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
-
-    pusher.connect(new ConnectionEventListener() {
-      @Override
-      public void onConnectionStateChange(ConnectionStateChange change) {
-      }
-
-      @Override
-      public void onError(String message, String code, Exception e) {
-      }
-    }, ConnectionState.ALL);
-
-    // Subscribe to a channel
-    channel = pusher.subscribePrivate("private-notifications",
-            new PrivateChannelEventListener() {
-              @Override
-              public void onAuthenticationFailure(String message, Exception e) {
-              }
-
-              @Override
-              public void onSubscriptionSucceeded(String channelName) {
-              }
-
-              @Override
-              public void onEvent(String channelName, String eventName, String data) {
-              }
-            });
-  }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -249,41 +206,40 @@ public class HomeActivity extends Activity implements
           HttpClient httpclient = new DefaultHttpClient();
           HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/create");
 
-          JSONObject message = new JSONObject();
+          Game game = new Game();
+          game.type = spinner.getSelectedItem().toString();
+          game.name = mNameOfEventEdit.getText().toString();
+          game.desc = mDetailsEdit.getText().toString();
+          game.date = cal.getTimeInMillis() / 1000;
+          game.bet = 799;
 
-          message.put("type", spinner.getSelectedItem().toString());
-          message.put("name", mNameOfEventEdit.getText().toString());
-          message.put("desc", mDetailsEdit.getText().toString());
-          message.put("date", cal.getTimeInMillis() / 1000);
-          message.put("bet", 799);
+          game.people = game.new People();
+          game.people.max = rightRange;
+          game.people.min = leftRange;
 
-          JSONObject people = new JSONObject();
-          people.put("min", leftRange);
-          people.put("max", rightRange);
-          message.put("people", people);
+          game.place = game.new Place();
+          game.place.lat = latitude;
+          game.place.lon = longitude;
 
+          game.contact = game.new Contact();
+          game.contact.phone = "";
+          game.contact.email = "";
+          game.contact.name = "";
 
-          JSONObject place = new JSONObject();
-          people.put("long", longitude);
-          people.put("lat", latitude);
-          message.put("place", place);
+          Gson gson = new Gson();
+          String jsonString = gson.toJson(game);
 
-          JSONObject contact = new JSONObject();
-          contact.put("phone", "");
-          contact.put("email", "");
-          contact.put("name", "");
-          message.put("contact", contact);
-
-          httppost.setEntity(new StringEntity(message.toString(), "UTF-8"));
+          httppost.setEntity(new StringEntity(jsonString));
+          httppost.addHeader("content-type", "application/json");
           HttpResponse response = httpclient.execute(httppost);
         } catch (Exception e) {
-          e.printStackTrace();
+          Log.d("HTTP", e.toString());
         }
       }
     });
 
     thread.start();
-      finish();
+    finish();
   }
 
   @Override

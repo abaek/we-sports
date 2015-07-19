@@ -17,5 +17,7 @@
     <string name="name_of_event">Name of Event</string>
     <string name="title_activity_subscription">SubscriptionActivity</string>
     <string name="add_game_text">Propose Event</string>
+    <string name="tab_notifications">Notifications</string>
+    <string name="tab_subscriptions">Subscriptions</string>
 
 </resources>

@@ -67,4 +67,5 @@ dependencies {
     compile('com.digits.sdk.android:digits:1.6.2@aar') {
         transitive = true;
     }
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
 }
