@@ -12,4 +12,7 @@
     <string name="num_people_prompt">How many people are needed?</string>
     <string name="datetime_prompt">When do you want to play?</string>
     <string name="details_prompt">Any additional details?</string>
+    <string name="loading_text">Loading...</string>
+    <string name="title_activity_pusher">PusherActivity</string>
+
 </resources>
