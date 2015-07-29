@@ -180,7 +180,7 @@ public class ScreenSlidePageFragment extends Fragment {
       TextView gameName = (TextView) convertView.findViewById(R.id.game_name);
       TextView gameType = (TextView) convertView.findViewById(R.id.game_type);
       // Populate the data into the template view using the data object
-      gameName.setText(game.name);
+      gameName.setText(game.details);
       gameType.setText(game.type);
       // Return the completed view to render on screen
       return convertView;

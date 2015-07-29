@@ -12,9 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.appyvet.rangebar.RangeBar;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -24,7 +22,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -43,9 +40,7 @@ public class HomeActivity extends Activity implements
   private Button mLocationButton;
   private Button mDateButton;
   private Button mTimeButton;
-  private TextView mRangeText;
   private EditText mDetailsEdit;
-  private EditText mNameOfEventEdit;
 
   private double latitude;
   private double longitude;
@@ -53,9 +48,6 @@ public class HomeActivity extends Activity implements
   private Place place;
   private Calendar cal;
   private Spinner spinner;
-
-  private int leftRange;
-  private int rightRange;
 
   private int timeSeconds;
   private int dateSeconds;
@@ -73,7 +65,6 @@ public class HomeActivity extends Activity implements
     mTimeButton = (Button) findViewById(R.id.time_button);
     mLocationButton = (Button) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
-    mNameOfEventEdit = (EditText) findViewById(R.id.name_of_event_edit);
 
     // set date and time text
     cal = Calendar.getInstance();
@@ -82,28 +73,6 @@ public class HomeActivity extends Activity implements
     mDateButton.setText(dateFormat.format(date));
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
     mTimeButton.setText(timeFormat.format(date));
-
-    // set range bar values
-    RangeBar mRangeBar = (RangeBar) findViewById(R.id.rangebar);
-    mRangeText = (TextView) findViewById(R.id.rangetext);
-    mRangeText.setText(6 + " - " + 10);
-    leftRange = 6;
-    rightRange = 10;
-    mRangeBar.setRangePinsByIndices(6, 10);
-    mRangeBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
-      @Override
-      public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
-                                        int rightPinIndex,
-                                        String leftPinValue, String rightPinValue) {
-        if (leftPinValue == rightPinValue) {
-          mRangeText.setText(leftPinValue);
-        } else {
-          mRangeText.setText(leftPinValue + " - " + rightPinValue);
-        }
-        leftRange = leftPinIndex;
-        rightRange = rightPinIndex;
-      }
-    });
 
     // set spinner values
     spinner = (Spinner) findViewById(R.id.game_spinner);
@@ -140,7 +109,6 @@ public class HomeActivity extends Activity implements
     try {
       PlacePicker.IntentBuilder intentBuilder =
               new PlacePicker.IntentBuilder();
-      // intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
       Intent intent = intentBuilder.build(this);
       startActivityForResult(intent, PLACE_PICKER_REQUEST);
 
@@ -161,14 +129,8 @@ public class HomeActivity extends Activity implements
 
           Game game = new Game();
           game.type = spinner.getSelectedItem().toString();
-          game.name = mNameOfEventEdit.getText().toString();
-          game.desc = mDetailsEdit.getText().toString();
+          game.details = mDetailsEdit.getText().toString();
           game.date = cal.getTimeInMillis() / 1000;
-          game.bet = 799;
-
-          game.people = game.new People();
-          game.people.max = rightRange;
-          game.people.min = leftRange;
 
           game.place = game.new Place();
           game.place.lat = latitude;
@@ -184,7 +146,7 @@ public class HomeActivity extends Activity implements
 
           httppost.setEntity(new StringEntity(jsonString));
           httppost.addHeader("content-type", "application/json");
-          HttpResponse response = httpclient.execute(httppost);
+          httpclient.execute(httppost);
         } catch (Exception e) {
           Log.d("HTTP", e.toString());
         }

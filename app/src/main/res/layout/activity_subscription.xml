@@ -19,7 +19,7 @@
         android:layout_weight="1"/>
 
     <Button
-        android:text="@string/add_game_text"
+        android:text="@string/create_event"
         android:onClick="onAddGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
