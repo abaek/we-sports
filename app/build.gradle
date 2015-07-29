@@ -1,21 +1,4 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-def PAYPAL_CLIENT_ID = '"' + PaypalClientIdProp + '"' ?: '"Define Paypal client ID"';
-def PAYPAL_SECRET = '"' + PaypalSecretProp + '"' ?: '"Define Paypal secret"';
-def PUSHER_KEY = '"' + PusherKeyProp + '"' ?: '"Define Pusher key"';
-def PUSHER_SECRET_KEY = '"' + PusherSecretKeyProp + '"' ?: '"Define Pusher secret key"';
-def TWITTER_KEY = '"' + TwitterKeyProp + '"' ?: '"Define twitter  key"';
-def TWITTER_SECRET = '"' + TwitterSecretProp + '"' ?: '"Define twitter secret key"';
 
 android {
     compileSdkVersion 21
@@ -32,40 +15,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', 'PAYPAL_CLIENT_ID', PAYPAL_CLIENT_ID
-            buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
-            buildConfigField 'String', 'PUSHER_KEY', PUSHER_KEY
-            buildConfigField 'String', 'PUSHER_SECRET_KEY', PUSHER_SECRET_KEY
-            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
-            buildConfigField 'String', 'TWITTER_SECRET', TWITTER_SECRET
-        }
-
-        debug{
-            buildConfigField 'String', 'PAYPAL_CLIENT_ID', PAYPAL_CLIENT_ID
-            buildConfigField 'String', 'PAYPAL_SECRET', PAYPAL_SECRET
-            buildConfigField 'String', 'PUSHER_KEY', PUSHER_KEY
-            buildConfigField 'String', 'PUSHER_SECRET_KEY', PUSHER_SECRET_KEY
-            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
-            buildConfigField 'String', 'TWITTER_SECRET', TWITTER_SECRET
         }
     }
-}
-
-repositories {
-    maven { url 'http://clojars.org/repo' }
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
-    compile 'com.pusher:pusher-java-client:0.3.3'
     compile 'com.appyvet:materialrangebar:1.0'
     compile 'com.wdullaer:materialdatetimepicker:1.4.1'
-    compile files('lib/PayPalAndroidSDK-2.9.10.jar')
-    compile('com.digits.sdk.android:digits:1.6.2@aar') {
-        transitive = true;
-    }
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile 'com.google.code.gson:gson:2.3'
 }

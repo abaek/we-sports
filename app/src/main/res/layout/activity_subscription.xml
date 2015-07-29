@@ -3,11 +3,6 @@
                 android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     >
-    <com.digits.sdk.android.DigitsAuthButton
-        android:id="@+id/auth_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"/>
 
     <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"

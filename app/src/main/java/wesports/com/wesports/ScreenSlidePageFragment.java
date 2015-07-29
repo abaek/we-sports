@@ -17,14 +17,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,44 +76,44 @@ public class ScreenSlidePageFragment extends Fragment {
   }
 
   public void loadGames(final ListView listview) {
-      try {
-        HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/events");
+    try {
+      HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/events");
 
-        ArrayList<String> types = new ArrayList<>();
-        SharedPreferences settings = getActivity().getPreferences(0);
-        for (final String game : getResources().getStringArray(R.array.games_array)) {
-          if (settings.getBoolean(game, false)) {
-            types.add(game);
-          }
+      ArrayList<String> types = new ArrayList<>();
+      SharedPreferences settings = getActivity().getPreferences(0);
+      for (final String game : getResources().getStringArray(R.array.games_array)) {
+        if (settings.getBoolean(game, false)) {
+          types.add(game);
         }
+      }
 
-        Gson gson1 = new Gson();
-        String jsonString = gson1.toJson(types);
+      Gson gson1 = new Gson();
+      String jsonString = gson1.toJson(types);
 
-        httppost.setEntity(new StringEntity(jsonString));
-        httppost.addHeader("content-type", "application/json");
+      httppost.setEntity(new StringEntity(jsonString));
+      httppost.addHeader("content-type", "application/json");
 
-        LoadGamesAsyncTask loadGamesTask =
-            new LoadGamesAsyncTask(httppost, new LoadGamesAsyncTask.Callback(){
+      LoadGamesAsyncTask loadGamesTask =
+              new LoadGamesAsyncTask(httppost, new LoadGamesAsyncTask.Callback() {
 
                 @Override
                 public void onComplete(Object o, Error error) {
-                    if(error != null){
-                        Log.e("LoadGamesTask", error.getMessage());
-                        return;
-                    }
-                    List<Game> gamesList = (List<Game>) o;
-                    Log.e("LoadGamesTask", "" + gamesList.size());
-                    GamesAdapter adapter = new GamesAdapter(getActivity(), (ArrayList) gamesList);
-                    // Attach the adapter to a ListView
-                    listview.setAdapter(adapter);
+                  if (error != null) {
+                    Log.e("LoadGamesTask", error.getMessage());
+                    return;
+                  }
+                  List<Game> gamesList = (List<Game>) o;
+                  Log.e("LoadGamesTask", "" + gamesList.size());
+                  GamesAdapter adapter = new GamesAdapter(getActivity(), (ArrayList) gamesList);
+                  // Attach the adapter to a ListView
+                  listview.setAdapter(adapter);
                 }
-            });
+              });
 
-          loadGamesTask.execute();
-      } catch (Exception e) {
-        Log.d("HTTP", e.toString());
-      }
+      loadGamesTask.execute();
+    } catch (Exception e) {
+      Log.d("HTTP", e.toString());
+    }
   }
 
   public View getSubscriptionCard() {
