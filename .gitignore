@@ -5,3 +5,4 @@
 .DS_Store
 /build
 *.properties
+*/google_maps_api.xml
