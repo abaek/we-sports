@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class HomeActivity extends Activity implements
+public class CreateEventActivity extends Activity implements
         TimePickerDialog.OnTimeSetListener,
         DatePickerDialog.OnDateSetListener {
 
@@ -177,7 +177,7 @@ public class HomeActivity extends Activity implements
 
   public void setDate(View view) {
     DatePickerDialog dpd = DatePickerDialog.newInstance(
-            HomeActivity.this,
+            CreateEventActivity.this,
             cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH),
             cal.get(Calendar.DAY_OF_MONTH)
@@ -188,7 +188,7 @@ public class HomeActivity extends Activity implements
 
   public void setTime(View view) {
     TimePickerDialog tpd = TimePickerDialog.newInstance(
-            HomeActivity.this,
+            CreateEventActivity.this,
             cal.get(Calendar.HOUR_OF_DAY),
             cal.get(Calendar.MINUTE),
             false

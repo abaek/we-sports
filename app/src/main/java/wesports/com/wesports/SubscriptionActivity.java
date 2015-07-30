@@ -96,7 +96,7 @@ public class SubscriptionActivity extends FragmentActivity {
   }
 
   public void onAddGame(View view) {
-    Intent intent = new Intent(this, HomeActivity.class);
+    Intent intent = new Intent(this, CreateEventActivity.class);
     startActivity(intent);
   }
 }
