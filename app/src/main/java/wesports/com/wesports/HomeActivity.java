@@ -1,0 +1,121 @@
+package wesports.com.wesports;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class HomeActivity extends Activity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_home);
+
+    ListView eventList = (ListView) findViewById(R.id.event_list);
+    loadGames(eventList);
+
+    SharedPreferences settings = getPreferences(0);
+
+    if (!settings.getBoolean("loggedIn", false)) {
+      SharedPreferences.Editor editor = settings.edit();
+      editor.putBoolean("loggedIn", true);
+      for (final String game : getResources().getStringArray(R.array.games_array)) {
+        editor.putBoolean(game, true);
+      }
+      editor.apply();
+    }
+  }
+
+  public void onAddGame(View view) {
+    Intent intent = new Intent(this, CreateEventActivity.class);
+    startActivity(intent);
+  }
+
+  public void goToSubscriptions(View view) {
+    Intent intent = new Intent(this, SubscriptionActivity.class);
+    startActivity(intent);
+  }
+
+  private void loadGames(final ListView listview) {
+    try {
+      HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/events");
+
+      ArrayList<String> types = new ArrayList<>();
+      SharedPreferences settings = getPreferences(0);
+      for (final String game : getResources().getStringArray(R.array.games_array)) {
+        if (settings.getBoolean(game, false)) {
+          types.add(game);
+        }
+      }
+
+      Gson gson1 = new Gson();
+      String jsonString = gson1.toJson(types);
+
+      httppost.setEntity(new StringEntity(jsonString));
+      httppost.addHeader("content-type", "application/json");
+
+      LoadGamesAsyncTask loadGamesTask =
+              new LoadGamesAsyncTask(httppost, new LoadGamesAsyncTask.Callback() {
+
+                @Override
+                public void onComplete(Object o, Error error) {
+                  if (error != null) {
+                    Log.e("LoadGamesTask", error.getMessage());
+                    return;
+                  }
+                  List<Game> gamesList = (List<Game>) o;
+                  Log.e("LoadGamesTask", "" + gamesList.size());
+                  GamesAdapter adapter = new GamesAdapter(getApplicationContext(), (ArrayList) gamesList);
+                  // Attach the adapter to a ListView
+                  listview.setAdapter(adapter);
+                }
+              });
+
+      loadGamesTask.execute();
+    } catch (Exception e) {
+      Log.d("HTTP", e.toString());
+    }
+  }
+
+  public class GamesAdapter extends ArrayAdapter<Game> {
+    public GamesAdapter(Context context, ArrayList<Game> games) {
+      super(context, 0, games);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      // Get the data item for this position
+      Game game = getItem(position);
+      // Check if an existing view is being reused, otherwise inflate the view
+      if (convertView == null) {
+        convertView = LayoutInflater.from(getContext()).inflate(R.layout.game_row, parent, false);
+      }
+      // Lookup view for data population
+      TextView gameName = (TextView) convertView.findViewById(R.id.game_name);
+      TextView gameType = (TextView) convertView.findViewById(R.id.game_type);
+      // Populate the data into the template view using the data object
+      gameName.setText(game.details);
+      gameType.setText(game.type);
+      // Return the completed view to render on screen
+      return convertView;
+    }
+  }
+}

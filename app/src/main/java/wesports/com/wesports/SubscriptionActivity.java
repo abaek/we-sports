@@ -1,102 +1,62 @@
 package wesports.com.wesports;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
 
-import com.astuetz.PagerSlidingTabStrip;
 
-
-public class SubscriptionActivity extends FragmentActivity {
-
-  public SharedPreferences settings;
-  private ViewPager mPager;
-  private PagerAdapter mPagerAdapter;
-
-  private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-    private final String[] TITLES = {
-            getString(R.string.tab_notifications),
-            getString(R.string.tab_subscriptions)
-    };
-
-    public ScreenSlidePagerAdapter(FragmentManager fm) {
-      super(fm);
-    }
-
-    public CharSequence getPageTitle(int position) {
-      return TITLES[position];
-    }
-
-    @Override
-    public Fragment getItem(int position) {
-      return ScreenSlidePageFragment.create(position);
-    }
-
-    @Override
-    public int getItemPosition(Object object) {
-      return POSITION_NONE;
-    }
-
-    @Override
-    public int getCount() {
-      return TITLES.length;
-    }
-  }
+public class SubscriptionActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_subscription);
+    LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
 
-    mPager = (ViewPager) findViewById(R.id.pager);
-    mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-    mPager.setAdapter(mPagerAdapter);
-    final PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-    tabs.setViewPager(mPager);
-
+    SharedPreferences settings;
     settings = getPreferences(0);
     final SharedPreferences.Editor editor = settings.edit();
 
-    tabs.setVisibility(View.VISIBLE);
-    mPager.setVisibility(View.VISIBLE);
-    editor.putString("loggedIn", "name");
-    editor.apply();
-  }
+    // Restore preferences
+    for (final String game : getResources().getStringArray(R.array.games_array)) {
+      LinearLayout view = new LinearLayout(this);
+      Switch toggle = new Switch(this);
+      boolean subscribed = settings.getBoolean(game, false);
+      toggle.setChecked(subscribed);
+      toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+          editor.putBoolean(game, isChecked);
+          editor.apply();
+        }
+      });
+      LinearLayout.LayoutParams horizontalSpacingLayout =
+              new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                      LinearLayout.LayoutParams.WRAP_CONTENT);
+      horizontalSpacingLayout.setMargins(0, 0, 24, 0);
+      view.addView(toggle, horizontalSpacingLayout);
 
+      TextView text = new TextView(this);
+      text.setTextSize(20);
+      text.setTextColor(Color.BLACK);
+      text.setText(game);
+      view.addView(text);
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_subscription, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
+      LinearLayout.LayoutParams verticalSpacingLayout =
+              new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                      LinearLayout.LayoutParams.WRAP_CONTENT);
+      verticalSpacingLayout.setMargins(10, 0, 0, 10);
+      layout.addView(view, verticalSpacingLayout);
     }
-
-    return super.onOptionsItemSelected(item);
   }
 
-  public void onAddGame(View view) {
-    Intent intent = new Intent(this, CreateEventActivity.class);
-    startActivity(intent);
+  public void backPressed(View view) {
+    finish();
   }
+
 }

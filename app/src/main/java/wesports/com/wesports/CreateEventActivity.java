@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -32,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class CreateEventActivity extends AppCompatActivity implements
+public class CreateEventActivity extends Activity implements
         TimePickerDialog.OnTimeSetListener {
 
   private TextView mLocationButton;
@@ -84,25 +81,6 @@ public class CreateEventActivity extends AppCompatActivity implements
             R.array.date_array, android.R.layout.simple_spinner_item);
     dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     dateSpinner.setAdapter(dateAdapter);
-  }
-
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.home, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      // Respond to the action bar's Up/Home button
-      case android.R.id.home:
-        finish();
-        return true;
-    }
-    return super.onOptionsItemSelected(item);
   }
 
   public void backPressed(View view) {
