@@ -12,12 +12,13 @@
     <string name="tab_subscriptions">Subscriptions</string>
 
     <!-- Create Event Screen -->
-    <string name="location_select">at SELECT LOCATION</string>
+    <string name="location_select">SELECT LOCATION</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="details_prompt">Details</string>
     <string name="create_event_button">Create Event</string>
     <string name="lets_play">Let\'s play</string>
+    <string name="at">at</string>
 
 
 </resources>

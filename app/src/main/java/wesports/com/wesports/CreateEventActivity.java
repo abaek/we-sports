@@ -67,7 +67,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     cal = Calendar.getInstance();
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText("at " + timeFormat.format(date));
+    mTimeButton.setText(timeFormat.format(date));
 
     // set gameSpinner values
     gameSpinner = (Spinner) findViewById(R.id.game_spinner);
@@ -172,7 +172,7 @@ public class CreateEventActivity extends AppCompatActivity implements
       latitude = place.getLatLng().latitude;
       longitude = place.getLatLng().longitude;
       final CharSequence name = place.getName();
-      mLocationButton.setText("at " + name);
+      mLocationButton.setText(name);
     } else {
       super.onActivityResult(requestCode, resultCode, data);
     }
@@ -201,6 +201,6 @@ public class CreateEventActivity extends AppCompatActivity implements
     cal.set(Calendar.MINUTE, minute);
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText("at " + timeFormat.format(date));
+    mTimeButton.setText(timeFormat.format(date));
   }
 }
