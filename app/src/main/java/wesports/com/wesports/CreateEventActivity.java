@@ -10,17 +10,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.gson.Gson;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -35,13 +33,10 @@ import java.util.Date;
 
 
 public class CreateEventActivity extends AppCompatActivity implements
-        TimePickerDialog.OnTimeSetListener,
-        DatePickerDialog.OnDateSetListener {
+        TimePickerDialog.OnTimeSetListener {
 
-  private ImageView backButton;
-  private Button mLocationButton;
-  private Button mDateButton;
-  private Button mTimeButton;
+  private TextView mLocationButton;
+  private TextView mTimeButton;
   private EditText mDetailsEdit;
 
   private double latitude;
@@ -49,7 +44,8 @@ public class CreateEventActivity extends AppCompatActivity implements
 
   private Place place;
   private Calendar cal;
-  private Spinner spinner;
+  private Spinner gameSpinner;
+  private Spinner dateSpinner;
 
   private int timeSeconds;
   private int dateSeconds;
@@ -63,28 +59,31 @@ public class CreateEventActivity extends AppCompatActivity implements
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_game);
 
-    mDateButton = (Button) findViewById(R.id.date_button);
-    mTimeButton = (Button) findViewById(R.id.time_button);
-    mLocationButton = (Button) findViewById(R.id.location_button);
+    mTimeButton = (TextView) findViewById(R.id.time_button);
+    mLocationButton = (TextView) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
 
     // set date and time text
     cal = Calendar.getInstance();
     Date date = cal.getTime();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy");
-    mDateButton.setText(dateFormat.format(date));
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText(timeFormat.format(date));
+    mTimeButton.setText("at " + timeFormat.format(date));
 
-    // set spinner values
-    spinner = (Spinner) findViewById(R.id.game_spinner);
-    // Create an ArrayAdapter using the string array and a default spinner layout
+    // set gameSpinner values
+    gameSpinner = (Spinner) findViewById(R.id.game_spinner);
+    // Create an ArrayAdapter using the string array and a default gameSpinner layout
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.games_array, android.R.layout.simple_spinner_item);
     // Specify the layout to use when the list of choices appears
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    // Apply the adapter to the spinner
-    spinner.setAdapter(adapter);
+    // Apply the adapter to the gameSpinner
+    gameSpinner.setAdapter(adapter);
+
+    dateSpinner = (Spinner) findViewById(R.id.date_spinner);
+    ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,
+            R.array.date_array, android.R.layout.simple_spinner_item);
+    dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    dateSpinner.setAdapter(dateAdapter);
   }
 
 
@@ -133,7 +132,7 @@ public class CreateEventActivity extends AppCompatActivity implements
           HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/create");
 
           Game game = new Game();
-          game.type = spinner.getSelectedItem().toString();
+          game.type = gameSpinner.getSelectedItem().toString();
           game.details = mDetailsEdit.getText().toString();
           game.date = cal.getTimeInMillis() / 1000;
 
@@ -173,22 +172,10 @@ public class CreateEventActivity extends AppCompatActivity implements
       latitude = place.getLatLng().latitude;
       longitude = place.getLatLng().longitude;
       final CharSequence name = place.getName();
-      mLocationButton.setText(name);
+      mLocationButton.setText("at " + name);
     } else {
       super.onActivityResult(requestCode, resultCode, data);
     }
-  }
-
-
-  public void setDate(View view) {
-    DatePickerDialog dpd = DatePickerDialog.newInstance(
-            CreateEventActivity.this,
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
-    );
-    dpd.setThemeDark(true);
-    dpd.show(getFragmentManager(), "Datepickerdialog");
   }
 
   public void setTime(View view) {
@@ -214,18 +201,6 @@ public class CreateEventActivity extends AppCompatActivity implements
     cal.set(Calendar.MINUTE, minute);
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText(timeFormat.format(date));
-  }
-
-  @Override
-  public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-    cal.set(Calendar.YEAR, year);
-    cal.set(Calendar.MONTH, monthOfYear);
-    cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-    Date date = cal.getTime();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy");
-    mDateButton.setText(dateFormat.format(date));
-    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText(timeFormat.format(date));
+    mTimeButton.setText("at " + timeFormat.format(date));
   }
 }
