@@ -21,5 +21,6 @@
     <string name="at">at</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_test">Test</string>
 
 </resources>

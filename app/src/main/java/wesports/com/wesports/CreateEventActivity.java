@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -29,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class CreateEventActivity extends Activity implements
+public class CreateEventActivity extends AppCompatActivity implements
         TimePickerDialog.OnTimeSetListener {
 
   private TextView mLocationButton;
@@ -55,6 +59,13 @@ public class CreateEventActivity extends Activity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_game);
+
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayShowHomeEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setTitle(R.string.create_event);
+    getSupportActionBar().setElevation(10);
 
     mTimeButton = (TextView) findViewById(R.id.time_button);
     mLocationButton = (TextView) findViewById(R.id.location_button);
@@ -83,8 +94,24 @@ public class CreateEventActivity extends Activity implements
     dateSpinner.setAdapter(dateAdapter);
   }
 
-  public void backPressed(View view) {
-    finish();
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_create_event, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      // Back button.
+      case android.R.id.home:
+        finish();
+        return true;
+      case R.id.action_create:
+        createGame();
+    }
+
+    return super.onOptionsItemSelected(item);
   }
 
   public void locationSelect(View view) {
@@ -101,7 +128,7 @@ public class CreateEventActivity extends Activity implements
     }
   }
 
-  public void createGame(View view) {
+  private void createGame() {
     Thread thread = new Thread(new Runnable() {
       @Override
       public void run() {

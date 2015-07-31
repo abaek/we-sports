@@ -5,7 +5,8 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/subscriptions_menu"/>
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:id="@+id/subscription_list"

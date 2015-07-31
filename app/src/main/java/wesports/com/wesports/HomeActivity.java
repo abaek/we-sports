@@ -1,12 +1,15 @@
 package wesports.com.wesports;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -22,14 +25,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends AppCompatActivity {
+
+  private ListView eventList;
+
+  private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
 
-    ListView eventList = (ListView) findViewById(R.id.event_list);
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayShowHomeEnabled(true);
+    getSupportActionBar().setElevation(10);
+
+    eventList = (ListView) findViewById(R.id.event_list);
     loadGames(eventList);
 
     SharedPreferences settings = getPreferences(0);
@@ -37,11 +49,29 @@ public class HomeActivity extends Activity {
     if (!settings.getBoolean("loggedIn", false)) {
       SharedPreferences.Editor editor = settings.edit();
       editor.putBoolean("loggedIn", true);
-      for (final String game : getResources().getStringArray(R.array.games_array)) {
+      for (String game : getResources().getStringArray(R.array.games_array)) {
         editor.putBoolean(game, true);
       }
       editor.apply();
     }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_home, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+
+    if (id == R.id.action_settings) {
+      Intent intent = new Intent(this, SubscriptionActivity.class);
+      startActivityForResult(intent, SUBSCRIPTION_CHANGED_REQUEST);
+    }
+
+    return super.onOptionsItemSelected(item);
   }
 
   public void onAddGame(View view) {
@@ -49,9 +79,18 @@ public class HomeActivity extends Activity {
     startActivity(intent);
   }
 
-  public void goToSubscriptions(View view) {
-    Intent intent = new Intent(this, SubscriptionActivity.class);
-    startActivity(intent);
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == SUBSCRIPTION_CHANGED_REQUEST) {
+      if (resultCode == RESULT_OK) {
+        loadGames(eventList);
+
+        SharedPreferences settings = getPreferences(0);
+        for (final String game : getResources().getStringArray(R.array.games_array)) {
+          if (settings.getBoolean(game, false)) {
+          }
+        }
+      }
+    }
   }
 
   private void loadGames(final ListView listview) {
@@ -86,6 +125,7 @@ public class HomeActivity extends Activity {
                   GamesAdapter adapter = new GamesAdapter(getApplicationContext(), (ArrayList) gamesList);
                   // Attach the adapter to a ListView
                   listview.setAdapter(adapter);
+                  adapter.notifyDataSetChanged();
                 }
               });
 
