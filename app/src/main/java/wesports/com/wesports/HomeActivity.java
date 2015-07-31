@@ -148,13 +148,27 @@ public class HomeActivity extends AppCompatActivity {
       if (convertView == null) {
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.game_row, parent, false);
       }
-      // Lookup view for data population
-      TextView gameName = (TextView) convertView.findViewById(R.id.game_name);
-      TextView gameType = (TextView) convertView.findViewById(R.id.game_type);
-      // Populate the data into the template view using the data object
-      gameName.setText(game.details);
-      gameType.setText(game.type);
+
+      TextView gameDate = (TextView) convertView.findViewById(R.id.date);
+      TextView gameTime = (TextView) convertView.findViewById(R.id.time);
+      TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_button);
+
+      gameDate.setText("Today");
+      gameTime.setText("06:00 PM");
       // Return the completed view to render on screen
+
+      acceptButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          TextView button = (TextView) v;
+          if (button.getCurrentTextColor() == getResources().getColor(R.color.black)) {
+            button.setTextColor(getResources().getColor(R.color.colorAccent));
+          } else {
+            button.setTextColor(getResources().getColor(R.color.black));
+          }
+        }
+      });
+      
       return convertView;
     }
   }

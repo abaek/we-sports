@@ -1,5 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="gutter_tiny">4dp</dimen>
+    <dimen name="gutter_small">8dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="large_vertical_margin">32dp</dimen>
@@ -9,6 +11,7 @@
     <dimen name="icon_size">24dp</dimen>
 
     <dimen name="regular_text_size">16sp</dimen>
+    <dimen name="large_text_size">24sp</dimen>
 
 
 </resources>
