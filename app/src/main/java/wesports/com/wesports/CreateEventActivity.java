@@ -26,6 +26,7 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class CreateEventActivity extends AppCompatActivity implements
@@ -122,6 +123,11 @@ public class CreateEventActivity extends AppCompatActivity implements
   private void createGame() {
     String type = typeSpinner.getSelectedItem().toString();
     String location = mLocationButton.getText().toString();
+    boolean tomorrow = dateSpinner.getSelectedItem().toString().equals(getResources().getString(R.string.tomorrow));
+    if (tomorrow) {
+      // Increment by 1 dat.
+      cal.add(Calendar.DATE, 1);
+    }
 
     Event event = new Event();
     event.setUuidString();
@@ -137,7 +143,11 @@ public class CreateEventActivity extends AppCompatActivity implements
     // Send push notification to channel.
     ParsePush push = new ParsePush();
     push.setChannel(type);
-    push.setMessage(type + " today at " + location + "!");
+    if (tomorrow) {
+      push.setMessage(type + " tomorrow at " + location + "!");
+    } else {
+      push.setMessage(type + " today at " + location + "!");
+    }
     push.sendInBackground();
 
     finish();
@@ -179,7 +189,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
     cal.set(Calendar.MINUTE, minute);
     Date date = cal.getTime();
-    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
+    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa", Locale.CANADA);
     mTimeButton.setText(timeFormat.format(date));
   }
 }

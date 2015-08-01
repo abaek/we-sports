@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -28,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
   private ListView eventList;
 
   private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
+  private static final int CREATE_EVENT_REQUEST = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +66,13 @@ public class HomeActivity extends AppCompatActivity {
 
   public void onAddGame(View view) {
     Intent intent = new Intent(this, CreateEventActivity.class);
-    startActivity(intent);
+    startActivityForResult(intent, CREATE_EVENT_REQUEST);
   }
 
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == SUBSCRIPTION_CHANGED_REQUEST) {
+      loadList();
+    } else if (requestCode == CREATE_EVENT_REQUEST) {
       loadList();
     }
   }
@@ -115,10 +119,16 @@ public class HomeActivity extends AppCompatActivity {
       }
 
       TextView date = (TextView) convertView.findViewById(R.id.date);
-      date.setText("Today");
+      SimpleDateFormat fmt = new SimpleDateFormat("dd", Locale.CANADA);
+
+      if (fmt.format(new Date()).equals(fmt.format(event.getDate()))) {
+        date.setText(getResources().getString(R.string.today));
+      } else {
+        date.setText(getResources().getString(R.string.tomorrow));
+      }
 
       TextView time = (TextView) convertView.findViewById(R.id.time);
-      SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm aaa");
+      SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm aaa", Locale.CANADA);
       time.setText(timeFormat.format(event.getDate()));
 
       TextView type = (TextView) convertView.findViewById(R.id.type);
