@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,6 +37,7 @@ import java.util.Locale;
 public class CreateEventActivity extends AppCompatActivity implements
         TimePickerDialog.OnTimeSetListener {
 
+  private ImageView icon;
   private TextView mLocationButton;
   private TextView mTimeButton;
   private EditText mDetailsEdit;
@@ -67,6 +70,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     getSupportActionBar().setTitle(R.string.create_event);
     getSupportActionBar().setElevation(10);
 
+    icon = (ImageView) findViewById(R.id.icon);
     mTimeButton = (TextView) findViewById(R.id.time_button);
     mLocationButton = (TextView) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
@@ -85,6 +89,35 @@ public class CreateEventActivity extends AppCompatActivity implements
             R.array.games_array, android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     typeSpinner.setAdapter(adapter);
+    typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        TextView item = (TextView) view;
+        String event = item.getText().toString();
+        switch (event) {
+          case "Basketball":
+            icon.setImageResource(R.mipmap.basketball);
+            break;
+          case "Soccer":
+            icon.setImageResource(R.mipmap.soccer);
+            break;
+          case "Football":
+            icon.setImageResource(R.mipmap.football);
+            break;
+          case "Volleyball":
+            icon.setImageResource(R.mipmap.volleyball);
+            break;
+          case "Tennis":
+            icon.setImageResource(R.mipmap.tennis);
+            break;
+        }
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+
+      }
+    });
 
     dateSpinner = (Spinner) findViewById(R.id.date_spinner);
     ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,

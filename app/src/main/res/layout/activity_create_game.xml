@@ -32,6 +32,7 @@
             android:layout_marginBottom="@dimen/spacing_between_items">
 
             <ImageView
+                android:id="@+id/icon"
                 android:layout_height="@dimen/icon_size"
                 android:layout_width="@dimen/icon_size"
                 android:layout_gravity="left"
