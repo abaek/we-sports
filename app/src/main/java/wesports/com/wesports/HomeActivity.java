@@ -11,14 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 
@@ -31,7 +26,6 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity {
 
   private ListView eventList;
-  private ParseQueryAdapter<Event> eventsListAdapter;
 
   private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
 
@@ -41,44 +35,13 @@ public class HomeActivity extends AppCompatActivity {
     setContentView(R.layout.activity_home);
 
     eventList = (ListView) findViewById(R.id.event_list);
-    eventsListAdapter = new EventsListAdapter(this);
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayShowHomeEnabled(true);
     getSupportActionBar().setElevation(10);
 
-    // If logged in for the first time, subscribe to everything.
-    SharedPreferences settings = getPreferences(0);
-    if (!settings.getBoolean("loggedIn", false)) {
-      SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean("loggedIn", true);
-      for (String game : getResources().getStringArray(R.array.games_array)) {
-        ParsePush.subscribeInBackground(game);
-        editor.putBoolean(game, true);
-      }
-      editor.commit();
-    }
-
-    // Query events.
-    ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
-    ArrayList<String> typesSubscribed = new ArrayList<>();
-    for (final String game : getResources().getStringArray(R.array.games_array)) {
-      if (settings.getBoolean(game, false)) {
-        typesSubscribed.add(game);
-      }
-    }
-    query.whereContainedIn("type", typesSubscribed);
-    query.whereGreaterThan("date", new Date());
-    query.findInBackground(new FindCallback<ParseObject>() {
-      public void done(List<ParseObject> picksList, ParseException e) {
-        if (e == null) {
-          // Set adapter after picks and picksIds have been found.
-          eventList.setAdapter(eventsListAdapter);
-          eventsListAdapter.notifyDataSetChanged();
-        }
-      }
-    });
+    loadList();
   }
 
   @Override
@@ -106,48 +69,23 @@ public class HomeActivity extends AppCompatActivity {
 
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == SUBSCRIPTION_CHANGED_REQUEST) {
-      if (resultCode == RESULT_OK) {
-        eventsListAdapter.notifyDataSetChanged();
-      }
+      loadList();
     }
   }
 
-  public class GamesAdapter extends ArrayAdapter<Event> {
-    public GamesAdapter(Context context, ArrayList<Event> events) {
-      super(context, 0, events);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      // Get the data item for this position
-      Event event = getItem(position);
-      // Check if an existing view is being reused, otherwise inflate the view
-      if (convertView == null) {
-        convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_row, parent, false);
+  private void loadList() {
+    ParseQueryAdapter<Event> eventsListAdapter = new EventsListAdapter(this);
+    eventsListAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<Event>() {
+      public void onLoading() {
+        // Show Spinner;
       }
 
-      TextView gameDate = (TextView) convertView.findViewById(R.id.date);
-      TextView gameTime = (TextView) convertView.findViewById(R.id.time);
-      TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_button);
-
-      gameDate.setText("Today");
-      gameTime.setText("06:00 PM");
-      // Return the completed view to render on screen
-
-      acceptButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          TextView button = (TextView) v;
-          if (button.getCurrentTextColor() == getResources().getColor(R.color.black)) {
-            button.setTextColor(getResources().getColor(R.color.colorAccent));
-          } else {
-            button.setTextColor(getResources().getColor(R.color.black));
-          }
-        }
-      });
-
-      return convertView;
-    }
+      @Override
+      public void onLoaded(List<Event> list, Exception e) {
+        // Hide Spinner
+      }
+    });
+    eventList.setAdapter(eventsListAdapter);
   }
 
   private class EventsListAdapter extends ParseQueryAdapter<Event> {
@@ -156,7 +94,15 @@ public class HomeActivity extends AppCompatActivity {
       super(context, new ParseQueryAdapter.QueryFactory<Event>() {
         public ParseQuery<Event> create() {
           ParseQuery<Event> query = Event.getQuery();
-          query.orderByAscending("date");
+          ArrayList<String> typesSubscribed = new ArrayList<>();
+          SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
+          for (String game : getResources().getStringArray(R.array.games_array)) {
+            if (settings.getBoolean(game, false)) {
+              typesSubscribed.add(game);
+            }
+          }
+          query.whereContainedIn("type", typesSubscribed);
+          query.whereGreaterThan("date", new Date());
           return query;
         }
       });

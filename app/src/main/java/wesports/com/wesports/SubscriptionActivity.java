@@ -1,5 +1,6 @@
 package wesports.com.wesports;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,8 +31,7 @@ public class SubscriptionActivity extends AppCompatActivity {
 
     LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
 
-    SharedPreferences settings;
-    settings = getPreferences(0);
+    SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
     final SharedPreferences.Editor editor = settings.edit();
 
     // Restore preferences
