@@ -168,7 +168,7 @@ public class HomeActivity extends AppCompatActivity {
           }
         }
       });
-      
+
       return convertView;
     }
   }
