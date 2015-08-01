@@ -38,6 +38,7 @@ public class CreateEventActivity extends AppCompatActivity implements
   private TextView mLocationButton;
   private TextView mTimeButton;
   private EditText mDetailsEdit;
+  private TextView errorMessage;
 
   private double latitude;
   private double longitude;
@@ -69,9 +70,12 @@ public class CreateEventActivity extends AppCompatActivity implements
     mTimeButton = (TextView) findViewById(R.id.time_button);
     mLocationButton = (TextView) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
+    errorMessage = (TextView) findViewById(R.id.error_message);
 
     // Current date and time.
     cal = Calendar.getInstance();
+    cal.add(Calendar.HOUR, 2);
+
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
     mTimeButton.setText(timeFormat.format(date));
@@ -124,45 +128,60 @@ public class CreateEventActivity extends AppCompatActivity implements
   }
 
   private void createGame() {
-    String type = typeSpinner.getSelectedItem().toString();
-    String location = mLocationButton.getText().toString();
     boolean tomorrow = dateSpinner.getSelectedItem().toString().equals(getResources().getString(R.string.tomorrow));
     if (tomorrow) {
-      // Increment by 1 dat.
+      // Increment by 1 day.
       cal.add(Calendar.DATE, 1);
     }
 
-    final Event event = new Event();
-    event.setUuidString();
-    event.setDate(cal.getTime());
-    event.setDetails(mDetailsEdit.getText().toString());
-    event.setLocation(location);
-    event.setType(type);
-    event.setLat(String.valueOf(latitude));
-    event.setLon(String.valueOf(longitude));
-    event.setNumAttending(1);
-    event.saveInBackground(new SaveCallback() {
-      @Override
-      public void done(com.parse.ParseException e) {
-        // User who created the event is attending;
-        if (e == null) {
-          SharedPreferences.Editor editor = getSharedPreferences("Events", Context.MODE_PRIVATE).edit();
-          editor.putBoolean(event.getObjectId(), true);
-          editor.commit();
-          finish();
-        }
-      }
-    });
+    Date now = new Date();
+    Date eventDate = cal.getTime();
 
-    // Send push notification to channel.
-    ParsePush push = new ParsePush();
-    push.setChannel(type);
-    if (tomorrow) {
-      push.setMessage(type + " tomorrow at " + location + "!");
-    } else {
-      push.setMessage(type + " today at " + location + "!");
+    // If no location selected.
+    if (mLocationButton.getText().toString().equals(getResources().getString(R.string.location_select))) {
+      errorMessage.setText(R.string.location_error_message);
+      errorMessage.setVisibility(View.VISIBLE);
     }
-    push.sendInBackground();
+    // If time is in the past.
+    else if (now.after(eventDate)) {
+      errorMessage.setText(R.string.date_error_message);
+      errorMessage.setVisibility(View.VISIBLE);
+    } else {
+      String type = typeSpinner.getSelectedItem().toString();
+      String location = mLocationButton.getText().toString();
+
+      final Event event = new Event();
+      event.setUuidString();
+      event.setDate(cal.getTime());
+      event.setDetails(mDetailsEdit.getText().toString());
+      event.setLocation(location);
+      event.setType(type);
+      event.setLat(String.valueOf(latitude));
+      event.setLon(String.valueOf(longitude));
+      event.setNumAttending(1);
+      event.saveInBackground(new SaveCallback() {
+        @Override
+        public void done(com.parse.ParseException e) {
+          // User who created the event is attending;
+          if (e == null) {
+            SharedPreferences.Editor editor = getSharedPreferences("Events", Context.MODE_PRIVATE).edit();
+            editor.putBoolean(event.getObjectId(), true);
+            editor.commit();
+            finish();
+          }
+        }
+      });
+
+      // Send push notification to channel.
+      ParsePush push = new ParsePush();
+      push.setChannel(type);
+      if (tomorrow) {
+        push.setMessage(type + " tomorrow at " + location + "!");
+      } else {
+        push.setMessage(type + " today at " + location + "!");
+      }
+      push.sendInBackground();
+    }
   }
 
   @Override

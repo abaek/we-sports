@@ -22,5 +22,7 @@
     <string name="title_activity_home">HomeActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_test">Test</string>
+    <string name="location_error_message">Please select a location.</string>
+    <string name="date_error_message">Please choose a valid time</string>
 
 </resources>

@@ -124,6 +124,15 @@
             android:layout_height="wrap_content"
             android:hint="@string/details_prompt"/>
 
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/location_select"
+            android:visibility="invisible"
+            android:textColor="@color/red"
+            style="@android:style/TextAppearance.Material.Widget.TextView"/>
+
     </LinearLayout>
 
 </LinearLayout>
