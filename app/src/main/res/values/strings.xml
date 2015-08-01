@@ -24,5 +24,6 @@
     <string name="title_activity_test">Test</string>
     <string name="location_error_message">Please select a location.</string>
     <string name="date_error_message">Please choose a valid time</string>
+    <string name="im_down">I\'m down</string>
 
 </resources>

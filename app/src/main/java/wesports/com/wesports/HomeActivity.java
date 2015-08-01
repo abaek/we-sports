@@ -152,7 +152,7 @@ public class HomeActivity extends AppCompatActivity {
       if (accepted) {
         acceptButton.setTextColor(getResources().getColor(R.color.colorAccent));
       } else {
-        acceptButton.setTextColor(getResources().getColor(R.color.black));
+        acceptButton.setTextColor(getResources().getColor(R.color.blue));
       }
       acceptButton.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -160,11 +160,11 @@ public class HomeActivity extends AppCompatActivity {
 
           // Change colour.
           TextView button = (TextView) v;
-          final boolean accept = button.getCurrentTextColor() == getResources().getColor(R.color.black);
+          final boolean accept = button.getCurrentTextColor() == getResources().getColor(R.color.blue);
           if (accept) {
             button.setTextColor(getResources().getColor(R.color.colorAccent));
           } else {
-            button.setTextColor(getResources().getColor(R.color.black));
+            button.setTextColor(getResources().getColor(R.color.blue));
           }
 
           // Change in SharedPreferences.

@@ -128,10 +128,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="I'm down"
-                android:textSize="@dimen/regular_text_size"
-                android:textColor="@color/black"
-                style="@android:style/TextAppearance.Material.Widget.TextView"/>
+                android:text="@string/im_down"
+                style="@style/Button"/>
 
             <TextView
                 android:id="@+id/num_attending"
