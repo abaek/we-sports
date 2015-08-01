@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 
@@ -113,7 +115,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    public View getItemView(Event event, View convertView, ViewGroup parent) {
+    public View getItemView(final Event event, View convertView, ViewGroup parent) {
       if (convertView == null) {
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_row, parent, false);
       }
@@ -140,19 +142,52 @@ public class HomeActivity extends AppCompatActivity {
       TextView details = (TextView) convertView.findViewById(R.id.details);
       details.setText(event.getDetails());
 
-      TextView numAttending = (TextView) convertView.findViewById(R.id.num_attending);
+      final TextView numAttending = (TextView) convertView.findViewById(R.id.num_attending);
       numAttending.setText(String.valueOf(event.getNumAttending()) + " attending");
 
       TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_button);
+      SharedPreferences settings = getSharedPreferences("Events", Context.MODE_PRIVATE);
+      final SharedPreferences.Editor editor = settings.edit();
+      boolean accepted = settings.getBoolean(event.getObjectId(), false);
+      if (accepted) {
+        acceptButton.setTextColor(getResources().getColor(R.color.colorAccent));
+      } else {
+        acceptButton.setTextColor(getResources().getColor(R.color.black));
+      }
       acceptButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+          // Change colour.
           TextView button = (TextView) v;
-          if (button.getCurrentTextColor() == getResources().getColor(R.color.black)) {
+          final boolean accept = button.getCurrentTextColor() == getResources().getColor(R.color.black);
+          if (accept) {
             button.setTextColor(getResources().getColor(R.color.colorAccent));
           } else {
             button.setTextColor(getResources().getColor(R.color.black));
           }
+
+          // Change in SharedPreferences.
+          editor.putBoolean(event.getObjectId(), accept);
+          editor.commit();
+
+          // Change num_attending in Parse.
+          ParseQuery<Event> query = Event.getQuery();
+          query.getInBackground(event.getObjectId(), new GetCallback<Event>() {
+            public void done(Event event, ParseException e) {
+              if (e == null) {
+                int attending = event.getNumAttending();
+                if (accept) {
+                  event.setNumAttending(attending + 1);
+                  numAttending.setText(String.valueOf(attending + 1) + " attending");
+                } else {
+                  event.setNumAttending(attending - 1);
+                  numAttending.setText(String.valueOf(attending - 1) + " attending");
+                }
+                event.saveInBackground();
+              }
+            }
+          });
         }
       });
 

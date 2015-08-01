@@ -1,8 +1,10 @@
 package wesports.com.wesports;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.parse.ParsePush;
+import com.parse.SaveCallback;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -129,7 +132,7 @@ public class CreateEventActivity extends AppCompatActivity implements
       cal.add(Calendar.DATE, 1);
     }
 
-    Event event = new Event();
+    final Event event = new Event();
     event.setUuidString();
     event.setDate(cal.getTime());
     event.setDetails(mDetailsEdit.getText().toString());
@@ -138,7 +141,18 @@ public class CreateEventActivity extends AppCompatActivity implements
     event.setLat(String.valueOf(latitude));
     event.setLon(String.valueOf(longitude));
     event.setNumAttending(1);
-    event.saveInBackground();
+    event.saveInBackground(new SaveCallback() {
+      @Override
+      public void done(com.parse.ParseException e) {
+        // User who created the event is attending;
+        if (e == null) {
+          SharedPreferences.Editor editor = getSharedPreferences("Events", Context.MODE_PRIVATE).edit();
+          editor.putBoolean(event.getObjectId(), true);
+          editor.commit();
+          finish();
+        }
+      }
+    });
 
     // Send push notification to channel.
     ParsePush push = new ParsePush();
@@ -149,8 +163,6 @@ public class CreateEventActivity extends AppCompatActivity implements
       push.setMessage(type + " today at " + location + "!");
     }
     push.sendInBackground();
-
-    finish();
   }
 
   @Override
