@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.parse.ParsePush;
+
 
 public class SubscriptionActivity extends AppCompatActivity {
 
@@ -41,7 +43,12 @@ public class SubscriptionActivity extends AppCompatActivity {
       toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           editor.putBoolean(game, isChecked);
-          editor.apply();
+          editor.commit();
+          if (isChecked) {
+            ParsePush.subscribeInBackground(game);
+          } else {
+            ParsePush.unsubscribeInBackground(game);
+          }
         }
       });
       LinearLayout.LayoutParams horizontalSpacingLayout =

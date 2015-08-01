@@ -19,7 +19,7 @@ public class LoadGamesAsyncTask extends AsyncTask<Void, Void, Void> {
   private Callback mCallback;
   private Error mError;
 
-  List<Game> mGamesList;
+  List<Event> mGamesList;
 
   public LoadGamesAsyncTask(HttpPost httppost, Callback callback) {
     mHttppost = httppost;
@@ -34,7 +34,7 @@ public class LoadGamesAsyncTask extends AsyncTask<Void, Void, Void> {
       String json = EntityUtils.toString(response.getEntity());
 
       Gson gson = new Gson();
-      TypeToken<List<Game>> token = new TypeToken<List<Game>>() {
+      TypeToken<List<Event>> token = new TypeToken<List<Event>>() {
       };
       mGamesList = gson.fromJson(json, token.getType());
 

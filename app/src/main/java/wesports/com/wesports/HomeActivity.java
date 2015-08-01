@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,18 +15,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
+import com.parse.ParseQueryAdapter;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 public class HomeActivity extends AppCompatActivity {
 
   private ListView eventList;
+  private ParseQueryAdapter<Event> eventsListAdapter;
 
   private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
 
@@ -36,24 +40,45 @@ public class HomeActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
 
+    eventList = (ListView) findViewById(R.id.event_list);
+    eventsListAdapter = new EventsListAdapter(this);
+
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayShowHomeEnabled(true);
     getSupportActionBar().setElevation(10);
 
-    eventList = (ListView) findViewById(R.id.event_list);
-    loadGames(eventList);
-
+    // If logged in for the first time, subscribe to everything.
     SharedPreferences settings = getPreferences(0);
-
     if (!settings.getBoolean("loggedIn", false)) {
       SharedPreferences.Editor editor = settings.edit();
       editor.putBoolean("loggedIn", true);
       for (String game : getResources().getStringArray(R.array.games_array)) {
+        ParsePush.subscribeInBackground(game);
         editor.putBoolean(game, true);
       }
-      editor.apply();
+      editor.commit();
     }
+
+    // Query events.
+    ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
+    ArrayList<String> typesSubscribed = new ArrayList<>();
+    for (final String game : getResources().getStringArray(R.array.games_array)) {
+      if (settings.getBoolean(game, false)) {
+        typesSubscribed.add(game);
+      }
+    }
+    query.whereContainedIn("type", typesSubscribed);
+    query.whereGreaterThan("date", new Date());
+    query.findInBackground(new FindCallback<ParseObject>() {
+      public void done(List<ParseObject> picksList, ParseException e) {
+        if (e == null) {
+          // Set adapter after picks and picksIds have been found.
+          eventList.setAdapter(eventsListAdapter);
+          eventsListAdapter.notifyDataSetChanged();
+        }
+      }
+    });
   }
 
   @Override
@@ -82,71 +107,23 @@ public class HomeActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == SUBSCRIPTION_CHANGED_REQUEST) {
       if (resultCode == RESULT_OK) {
-        loadGames(eventList);
-
-        SharedPreferences settings = getPreferences(0);
-        for (final String game : getResources().getStringArray(R.array.games_array)) {
-          if (settings.getBoolean(game, false)) {
-          }
-        }
+        eventsListAdapter.notifyDataSetChanged();
       }
     }
   }
 
-  private void loadGames(final ListView listview) {
-    try {
-      HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/events");
-
-      ArrayList<String> types = new ArrayList<>();
-      SharedPreferences settings = getPreferences(0);
-      for (final String game : getResources().getStringArray(R.array.games_array)) {
-        if (settings.getBoolean(game, false)) {
-          types.add(game);
-        }
-      }
-
-      Gson gson1 = new Gson();
-      String jsonString = gson1.toJson(types);
-
-      httppost.setEntity(new StringEntity(jsonString));
-      httppost.addHeader("content-type", "application/json");
-
-      LoadGamesAsyncTask loadGamesTask =
-              new LoadGamesAsyncTask(httppost, new LoadGamesAsyncTask.Callback() {
-
-                @Override
-                public void onComplete(Object o, Error error) {
-                  if (error != null) {
-                    Log.e("LoadGamesTask", error.getMessage());
-                    return;
-                  }
-                  List<Game> gamesList = (List<Game>) o;
-                  Log.e("LoadGamesTask", "" + gamesList.size());
-                  GamesAdapter adapter = new GamesAdapter(getApplicationContext(), (ArrayList) gamesList);
-                  // Attach the adapter to a ListView
-                  listview.setAdapter(adapter);
-                  adapter.notifyDataSetChanged();
-                }
-              });
-
-      loadGamesTask.execute();
-    } catch (Exception e) {
-      Log.d("HTTP", e.toString());
-    }
-  }
-
-  public class GamesAdapter extends ArrayAdapter<Game> {
-    public GamesAdapter(Context context, ArrayList<Game> games) {
-      super(context, 0, games);
+  public class GamesAdapter extends ArrayAdapter<Event> {
+    public GamesAdapter(Context context, ArrayList<Event> events) {
+      super(context, 0, events);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       // Get the data item for this position
-      Game game = getItem(position);
+      Event event = getItem(position);
       // Check if an existing view is being reused, otherwise inflate the view
       if (convertView == null) {
-        convertView = LayoutInflater.from(getContext()).inflate(R.layout.game_row, parent, false);
+        convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_row, parent, false);
       }
 
       TextView gameDate = (TextView) convertView.findViewById(R.id.date);
@@ -157,6 +134,60 @@ public class HomeActivity extends AppCompatActivity {
       gameTime.setText("06:00 PM");
       // Return the completed view to render on screen
 
+      acceptButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          TextView button = (TextView) v;
+          if (button.getCurrentTextColor() == getResources().getColor(R.color.black)) {
+            button.setTextColor(getResources().getColor(R.color.colorAccent));
+          } else {
+            button.setTextColor(getResources().getColor(R.color.black));
+          }
+        }
+      });
+
+      return convertView;
+    }
+  }
+
+  private class EventsListAdapter extends ParseQueryAdapter<Event> {
+
+    public EventsListAdapter(Context context) {
+      super(context, new ParseQueryAdapter.QueryFactory<Event>() {
+        public ParseQuery<Event> create() {
+          ParseQuery<Event> query = Event.getQuery();
+          query.orderByAscending("date");
+          return query;
+        }
+      });
+    }
+
+    @Override
+    public View getItemView(Event event, View convertView, ViewGroup parent) {
+      if (convertView == null) {
+        convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_row, parent, false);
+      }
+
+      TextView date = (TextView) convertView.findViewById(R.id.date);
+      date.setText("Today");
+
+      TextView time = (TextView) convertView.findViewById(R.id.time);
+      SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm aaa");
+      time.setText(timeFormat.format(event.getDate()));
+
+      TextView type = (TextView) convertView.findViewById(R.id.type);
+      type.setText(event.getType());
+
+      TextView location = (TextView) convertView.findViewById(R.id.location);
+      location.setText(event.getLocation());
+
+      TextView details = (TextView) convertView.findViewById(R.id.details);
+      details.setText(event.getDetails());
+
+      TextView numAttending = (TextView) convertView.findViewById(R.id.num_attending);
+      numAttending.setText(String.valueOf(event.getNumAttending()) + " attending");
+
+      TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_button);
       acceptButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {

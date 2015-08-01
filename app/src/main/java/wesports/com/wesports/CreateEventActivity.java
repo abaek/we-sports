@@ -19,14 +19,9 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.gson.Gson;
+import com.parse.ParsePush;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,7 +40,7 @@ public class CreateEventActivity extends AppCompatActivity implements
 
   private Place place;
   private Calendar cal;
-  private Spinner gameSpinner;
+  private Spinner typeSpinner;
   private Spinner dateSpinner;
 
   private int timeSeconds;
@@ -71,21 +66,17 @@ public class CreateEventActivity extends AppCompatActivity implements
     mLocationButton = (TextView) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
 
-    // set date and time text
+    // Current date and time.
     cal = Calendar.getInstance();
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
     mTimeButton.setText(timeFormat.format(date));
 
-    // set gameSpinner values
-    gameSpinner = (Spinner) findViewById(R.id.game_spinner);
-    // Create an ArrayAdapter using the string array and a default gameSpinner layout
+    typeSpinner = (Spinner) findViewById(R.id.game_spinner);
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.games_array, android.R.layout.simple_spinner_item);
-    // Specify the layout to use when the list of choices appears
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    // Apply the adapter to the gameSpinner
-    gameSpinner.setAdapter(adapter);
+    typeSpinner.setAdapter(adapter);
 
     dateSpinner = (Spinner) findViewById(R.id.date_spinner);
     ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,
@@ -129,50 +120,33 @@ public class CreateEventActivity extends AppCompatActivity implements
   }
 
   private void createGame() {
-    Thread thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          HttpClient httpclient = new DefaultHttpClient();
-          HttpPost httppost = new HttpPost("http://we-sports.herokuapp.com/create");
+    String type = typeSpinner.getSelectedItem().toString();
+    String location = mLocationButton.getText().toString();
 
-          Game game = new Game();
-          game.type = gameSpinner.getSelectedItem().toString();
-          game.details = mDetailsEdit.getText().toString();
-          game.date = cal.getTimeInMillis() / 1000;
+    Event event = new Event();
+    event.setUuidString();
+    event.setDate(cal.getTime());
+    event.setDetails(mDetailsEdit.getText().toString());
+    event.setLocation(location);
+    event.setType(type);
+    event.setLat(String.valueOf(latitude));
+    event.setLon(String.valueOf(longitude));
+    event.setNumAttending(1);
+    event.saveInBackground();
 
-          game.place = game.new Place();
-          game.place.lat = latitude;
-          game.place.lon = longitude;
+    // Send push notification to channel.
+    ParsePush push = new ParsePush();
+    push.setChannel(type);
+    push.setMessage(type + " today at " + location + "!");
+    push.sendInBackground();
 
-          game.contact = game.new Contact();
-          game.contact.phone = "";
-          game.contact.email = "";
-          game.contact.name = "";
-
-          Gson gson = new Gson();
-          String jsonString = gson.toJson(game);
-
-          httppost.setEntity(new StringEntity(jsonString));
-          httppost.addHeader("content-type", "application/json");
-          httpclient.execute(httppost);
-        } catch (Exception e) {
-          Log.d("HTTP", e.toString());
-        }
-      }
-    });
-
-    thread.start();
     finish();
   }
 
   @Override
-  protected void onActivityResult(int requestCode,
-                                  int resultCode, Intent data) {
-
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PLACE_PICKER_REQUEST
             && resultCode == Activity.RESULT_OK) {
-
       place = PlacePicker.getPlace(data, this);
       latitude = place.getLatLng().latitude;
       longitude = place.getLatLng().longitude;
