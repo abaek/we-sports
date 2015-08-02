@@ -23,8 +23,10 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.parse.ParseException;
 import com.parse.ParsePush;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -161,7 +163,7 @@ public class CreateEventActivity extends AppCompatActivity implements
   }
 
   private void createGame() {
-    boolean tomorrow = dateSpinner.getSelectedItem().toString().equals(getResources().getString(R.string.tomorrow));
+    final boolean tomorrow = dateSpinner.getSelectedItem().toString().equals(getResources().getString(R.string.tomorrow));
     if (tomorrow) {
       // Increment by 1 day.
       cal.add(Calendar.DATE, 1);
@@ -180,8 +182,8 @@ public class CreateEventActivity extends AppCompatActivity implements
       errorMessage.setText(R.string.date_error_message);
       errorMessage.setVisibility(View.VISIBLE);
     } else {
-      String type = typeSpinner.getSelectedItem().toString();
-      String location = mLocationButton.getText().toString();
+      final String type = typeSpinner.getSelectedItem().toString();
+      final String location = mLocationButton.getText().toString();
 
       final Event event = new Event();
       event.setUuidString();
@@ -205,15 +207,25 @@ public class CreateEventActivity extends AppCompatActivity implements
         }
       });
 
-      // Send push notification to channel.
-      ParsePush push = new ParsePush();
-      push.setChannel(type);
-      if (tomorrow) {
-        push.setMessage(type + " tomorrow at " + location + "!");
-      } else {
-        push.setMessage(type + " today at " + location + "!");
-      }
-      push.sendInBackground();
+      // Prevents you from getting a push notification about your own event.
+      ParsePush.unsubscribeInBackground(type, new SaveCallback() {
+        @Override
+        public void done(ParseException e) {
+          ParsePush push = new ParsePush();
+          push.setChannel(type);
+          if (tomorrow) {
+            push.setMessage(type + " tomorrow at " + location + "!");
+          } else {
+            push.setMessage(type + " today at " + location + "!");
+          }
+          push.sendInBackground(new SendCallback() {
+            @Override
+            public void done(ParseException e) {
+              ParsePush.subscribeInBackground(type);
+            }
+          });
+        }
+      });
     }
   }
 
