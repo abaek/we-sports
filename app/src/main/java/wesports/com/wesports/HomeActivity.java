@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,7 +34,6 @@ public class HomeActivity extends AppCompatActivity {
 
   private ListView eventList;
   private TextView nullState;
-  private FrameLayout eventListContainer;
 
   private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
   private static final int CREATE_EVENT_REQUEST = 2;
@@ -47,7 +45,6 @@ public class HomeActivity extends AppCompatActivity {
 
     eventList = (ListView) findViewById(R.id.event_list);
     nullState = (TextView) findViewById(R.id.null_state);
-    eventListContainer = (FrameLayout) findViewById(R.id.event_container);
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -99,11 +96,11 @@ public class HomeActivity extends AppCompatActivity {
       @Override
       public void onLoaded(List<Event> list, Exception e) {
         if (list.isEmpty()) {
-          eventListContainer.setVisibility(View.GONE);
+          eventList.setVisibility(View.GONE);
           nullState.setVisibility(View.VISIBLE);
         } else {
           nullState.setVisibility(View.GONE);
-          eventListContainer.setVisibility(View.VISIBLE);
+          eventList.setVisibility(View.VISIBLE);
         }
       }
     });
