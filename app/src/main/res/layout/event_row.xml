@@ -35,8 +35,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/gutter_small"
-                    android:textColor="@color/black"
                     android:text="Basketball"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/large_text_size"/>
 
                 <TextView
@@ -45,8 +45,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/gutter_tiny"
-                    android:textColor="@android:color/black"
                     android:text="Today at 6:00 PM"
+                    android:textColor="@android:color/black"
                     android:textSize="@dimen/regular_text_size"/>
 
             </LinearLayout>
@@ -55,13 +55,13 @@
                 android:id="@+id/location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/gutter_tiny"
-                android:layout_marginLeft="@dimen/gutter_small"
-                android:paddingRight="@dimen/gutter_small"
-                android:paddingBottom="@dimen/gutter_tiny"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/gutter_small"
+                android:background="@drawable/background_pressed"
                 android:clickable="true"
-                android:background="@drawable/background_pressed">
+                android:paddingBottom="@dimen/gutter_tiny"
+                android:paddingRight="@dimen/gutter_small"
+                android:paddingTop="@dimen/gutter_tiny">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -86,13 +86,13 @@
                 style="@android:style/TextAppearance.Material.Widget.TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gutter_tiny"
                 android:layout_marginLeft="@dimen/gutter_medium"
                 android:layout_marginRight="@dimen/gutter_medium"
-                android:layout_marginBottom="@dimen/gutter_tiny"
                 android:text="Bring your own ball."
                 android:textColor="@color/black"
-                android:textStyle="italic"
-                android:textSize="@dimen/regular_text_size"/>
+                android:textSize="@dimen/regular_text_size"
+                android:textStyle="italic"/>
 
             <View
                 android:layout_width="fill_parent"
@@ -103,16 +103,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/gutter_small"
-                android:layout_marginRight="@dimen/gutter_small"
-                android:layout_gravity="center_vertical">
+                android:layout_marginRight="@dimen/gutter_small">
 
                 <Button
                     android:id="@+id/accept_button"
+                    style="@android:style/Widget.Material.Button.Borderless.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/im_down"
-                    style="@android:style/Widget.Material.Button.Borderless.Small"/>
+                    android:text="@string/im_down"/>
 
                 <View
                     android:layout_width="0dp"
@@ -132,9 +132,9 @@
                     style="@android:style/TextAppearance.Material.Widget.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/gutter_medium"
                     android:gravity="right"
                     android:text="2 attending"
-                    android:layout_marginRight="@dimen/gutter_medium"
                     android:textSize="@dimen/regular_text_size"/>
 
             </LinearLayout>

@@ -53,12 +53,7 @@ public class CreateEventActivity extends AppCompatActivity implements
   private Spinner typeSpinner;
   private Spinner dateSpinner;
 
-  private int timeSeconds;
-  private int dateSeconds;
-
-  protected static final String TAG = "HomeActivity";
   private static final int PLACE_PICKER_REQUEST = 1;
-
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +83,12 @@ public class CreateEventActivity extends AppCompatActivity implements
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
     mTimeButton.setText(timeFormat.format(date));
+
+    dateSpinner = (Spinner) findViewById(R.id.date_spinner);
+    ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,
+            R.array.date_array, android.R.layout.simple_spinner_item);
+    dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    dateSpinner.setAdapter(dateAdapter);
 
     typeSpinner = (Spinner) findViewById(R.id.game_spinner);
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -122,15 +123,8 @@ public class CreateEventActivity extends AppCompatActivity implements
 
       @Override
       public void onNothingSelected(AdapterView<?> parent) {
-
       }
     });
-
-    dateSpinner = (Spinner) findViewById(R.id.date_spinner);
-    ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,
-            R.array.date_array, android.R.layout.simple_spinner_item);
-    dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    dateSpinner.setAdapter(dateAdapter);
   }
 
   @Override
@@ -155,11 +149,9 @@ public class CreateEventActivity extends AppCompatActivity implements
 
   public void locationSelect(View view) {
     try {
-      PlacePicker.IntentBuilder intentBuilder =
-              new PlacePicker.IntentBuilder();
+      PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
       Intent intent = intentBuilder.build(this);
       startActivityForResult(intent, PLACE_PICKER_REQUEST);
-
     } catch (GooglePlayServicesRepairableException e) {
       e.printStackTrace();
     } catch (GooglePlayServicesNotAvailableException e) {
@@ -236,8 +228,7 @@ public class CreateEventActivity extends AppCompatActivity implements
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == PLACE_PICKER_REQUEST
-            && resultCode == Activity.RESULT_OK) {
+    if (requestCode == PLACE_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
       place = PlacePicker.getPlace(data, this);
       latitude = place.getLatLng().latitude;
       longitude = place.getLatLng().longitude;

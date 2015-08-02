@@ -7,23 +7,17 @@
     <string name="create">Create</string>
     <string name="subscriptions">Subscriptions</string>
 
-    <!-- Tabs -->
-    <string name="tab_notifications">Events</string>
-    <string name="tab_subscriptions">Subscriptions</string>
-
     <!-- Create Event Screen -->
     <string name="location_select">SELECT LOCATION</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="details_prompt">Details</string>
+    <string name="details_hint">Details</string>
     <string name="create_event_button">Create Event</string>
     <string name="lets_play">Let\'s play</string>
-    <string name="at">at</string>
-    <string name="title_activity_home">HomeActivity</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_test">Test</string>
     <string name="location_error_message">Please select a location.</string>
-    <string name="date_error_message">Please choose a valid time</string>
+    <string name="date_error_message">Please choose a valid time.</string>
+
+    <!--Home Screen-->
     <string name="im_down">I\'m down</string>
 
 </resources>

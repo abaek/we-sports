@@ -7,24 +7,24 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:orientation="vertical"
         android:paddingLeft="@dimen/large_horizontal_margin"
         android:paddingRight="@dimen/large_horizontal_margin"
-        android:paddingTop="@dimen/large_vertical_margin"
-        android:orientation="vertical">
+        android:paddingTop="@dimen/large_vertical_margin">
 
         <TextView
+            style="@android:style/TextAppearance.Material.Widget.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lets_play"
             android:layout_marginBottom="@dimen/spacing_between_items"
-            android:textSize="@dimen/regular_text_size"
-            style="@android:style/TextAppearance.Material.Widget.TextView"/>
+            android:text="@string/lets_play"
+            android:textSize="@dimen/regular_text_size"/>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -33,21 +33,20 @@
 
             <ImageView
                 android:id="@+id/icon"
-                android:layout_height="@dimen/icon_size"
                 android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="left"
-                android:tint="@android:color/black"
-                android:src="@drawable/sports"/>
+                android:src="@drawable/sports"
+                android:tint="@android:color/black"/>
 
             <Spinner
                 android:id="@+id/game_spinner"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:layout_marginLeft="@dimen/large_horizontal_margin"
-                android:layout_height="wrap_content"/>
+                android:layout_marginLeft="@dimen/large_horizontal_margin"/>
 
         </FrameLayout>
-
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -55,11 +54,11 @@
             android:layout_marginBottom="@dimen/spacing_between_items">
 
             <ImageView
-                android:layout_height="@dimen/icon_size"
                 android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="left"
-                android:tint="@android:color/black"
-                android:src="@drawable/calendar"/>
+                android:src="@drawable/calendar"
+                android:tint="@android:color/black"/>
 
             <Spinner
                 android:id="@+id/date_spinner"
@@ -76,21 +75,21 @@
             android:layout_marginBottom="@dimen/spacing_between_items">
 
             <ImageView
-                android:layout_height="@dimen/icon_size"
                 android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="left"
-                android:tint="@android:color/black"
-                android:src="@drawable/clock"/>
+                android:src="@drawable/clock"
+                android:tint="@android:color/black"/>
 
             <TextView
                 android:id="@+id/time_button"
-                android:layout_height="wrap_content"
+                style="@android:style/TextAppearance.Material.Widget.TextView"
                 android:layout_width="wrap_content"
-                android:clickable="true"
-                android:onClick="setTime"
+                android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="@dimen/bigger_horizontal_margin"
-                style="@android:style/TextAppearance.Material.Widget.TextView"/>
+                android:clickable="true"
+                android:onClick="setTime"/>
 
         </FrameLayout>
 
@@ -100,22 +99,22 @@
             android:layout_marginBottom="@dimen/spacing_between_items">
 
             <ImageView
-                android:layout_height="@dimen/icon_size"
                 android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="left"
-                android:tint="@android:color/black"
-                android:src="@drawable/location_marker"/>
+                android:src="@drawable/location_marker"
+                android:tint="@android:color/black"/>
 
             <TextView
                 android:id="@+id/location_button"
-                android:layout_height="wrap_content"
+                style="@android:style/TextAppearance.Material.Widget.TextView"
                 android:layout_width="wrap_content"
-                android:clickable="true"
-                android:onClick="locationSelect"
-                android:text="@string/location_select"
+                android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="@dimen/bigger_horizontal_margin"
-                style="@android:style/TextAppearance.Material.Widget.TextView"/>
+                android:clickable="true"
+                android:onClick="locationSelect"
+                android:text="@string/location_select"/>
 
         </FrameLayout>
 
@@ -123,16 +122,16 @@
             android:id="@+id/details_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/details_prompt"/>
+            android:hint="@string/details_hint"/>
 
         <TextView
             android:id="@+id/error_message"
-            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Material.Widget.TextView"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/location_select"
-            android:visibility="invisible"
             android:textColor="@color/red"
-            style="@android:style/TextAppearance.Material.Widget.TextView"/>
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
