@@ -94,24 +94,26 @@ public class CreateEventActivity extends AppCompatActivity implements
     typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        TextView item = (TextView) view;
-        String event = item.getText().toString();
-        switch (event) {
-          case "Basketball":
-            icon.setImageResource(R.mipmap.basketball);
-            break;
-          case "Soccer":
-            icon.setImageResource(R.mipmap.soccer);
-            break;
-          case "Football":
-            icon.setImageResource(R.mipmap.football);
-            break;
-          case "Volleyball":
-            icon.setImageResource(R.mipmap.volleyball);
-            break;
-          case "Tennis":
-            icon.setImageResource(R.mipmap.tennis);
-            break;
+        if (view != null) {
+          TextView item = (TextView) view;
+          String event = item.getText().toString();
+          switch (event) {
+            case "Basketball":
+              icon.setImageResource(R.mipmap.basketball);
+              break;
+            case "Soccer":
+              icon.setImageResource(R.mipmap.soccer);
+              break;
+            case "Football":
+              icon.setImageResource(R.mipmap.football);
+              break;
+            case "Volleyball":
+              icon.setImageResource(R.mipmap.volleyball);
+              break;
+            case "Tennis":
+              icon.setImageResource(R.mipmap.tennis);
+              break;
+          }
         }
       }
 
