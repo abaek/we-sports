@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -26,12 +27,15 @@ import com.parse.ParseQueryAdapter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
 public class HomeActivity extends AppCompatActivity {
 
   private ListView eventList;
+  private TextView nullState;
+  private FrameLayout eventListContainer;
 
   private static final int SUBSCRIPTION_CHANGED_REQUEST = 1;
   private static final int CREATE_EVENT_REQUEST = 2;
@@ -42,6 +46,8 @@ public class HomeActivity extends AppCompatActivity {
     setContentView(R.layout.activity_home);
 
     eventList = (ListView) findViewById(R.id.event_list);
+    nullState = (TextView) findViewById(R.id.null_state);
+    eventListContainer = (FrameLayout) findViewById(R.id.event_container);
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -84,6 +90,23 @@ public class HomeActivity extends AppCompatActivity {
 
   private void loadList() {
     final ParseQueryAdapter<Event> eventsListAdapter = new EventsListAdapter(this);
+    eventsListAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<Event>() {
+      @Override
+      public void onLoading() {
+
+      }
+
+      @Override
+      public void onLoaded(List<Event> list, Exception e) {
+        if (list.isEmpty()) {
+          eventListContainer.setVisibility(View.GONE);
+          nullState.setVisibility(View.VISIBLE);
+        } else {
+          nullState.setVisibility(View.GONE);
+          eventListContainer.setVisibility(View.VISIBLE);
+        }
+      }
+    });
     eventList.setAdapter(eventsListAdapter);
   }
 
