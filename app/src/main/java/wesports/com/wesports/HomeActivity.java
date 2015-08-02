@@ -3,6 +3,7 @@ package wesports.com.wesports;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -138,6 +140,18 @@ public class HomeActivity extends AppCompatActivity {
 
       TextView location = (TextView) convertView.findViewById(R.id.location);
       location.setText(event.getLocation());
+
+      LinearLayout locationButton = (LinearLayout) convertView.findViewById(R.id.location_button);
+      locationButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          double latitude = Double.parseDouble(event.getLat());
+          double longitude = Double.parseDouble(event.getLon());
+          String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=<%f>,<%f>", latitude, longitude, latitude, longitude);
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+          startActivity(intent);
+        }
+      });
 
       TextView details = (TextView) convertView.findViewById(R.id.details);
       if (event.getDetails().isEmpty()) {

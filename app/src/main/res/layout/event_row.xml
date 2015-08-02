@@ -26,7 +26,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gutter_tiny"
                 android:layout_marginLeft="@dimen/gutter_medium"
                 android:layout_marginRight="@dimen/gutter_medium">
 
@@ -53,12 +52,16 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="@dimen/gutter_tiny"
                 android:layout_marginLeft="@dimen/gutter_small"
-                android:layout_marginBottom="@dimen/gutter_tiny"
+                android:paddingRight="@dimen/gutter_small"
+                android:paddingBottom="@dimen/gutter_tiny"
                 android:layout_gravity="center_vertical"
-                android:clickable="true">
+                android:clickable="true"
+                android:background="@drawable/background_pressed">
 
                 <ImageView
                     android:layout_width="20dp"
