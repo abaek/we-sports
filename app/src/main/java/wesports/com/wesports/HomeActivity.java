@@ -26,7 +26,6 @@ import com.parse.ParseQueryAdapter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -84,17 +83,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void loadList() {
-    ParseQueryAdapter<Event> eventsListAdapter = new EventsListAdapter(this);
-    eventsListAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<Event>() {
-      public void onLoading() {
-        // Show Spinner;
-      }
-
-      @Override
-      public void onLoaded(List<Event> list, Exception e) {
-        // Hide Spinner
-      }
-    });
+    final ParseQueryAdapter<Event> eventsListAdapter = new EventsListAdapter(this);
     eventList.setAdapter(eventsListAdapter);
   }
 
