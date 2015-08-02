@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -121,17 +123,15 @@ public class HomeActivity extends AppCompatActivity {
       }
 
       TextView date = (TextView) convertView.findViewById(R.id.date);
-      SimpleDateFormat fmt = new SimpleDateFormat("dd", Locale.CANADA);
-
-      if (fmt.format(new Date()).equals(fmt.format(event.getDate()))) {
-        date.setText(getResources().getString(R.string.today));
-      } else {
-        date.setText(getResources().getString(R.string.tomorrow));
-      }
-
-      TextView time = (TextView) convertView.findViewById(R.id.time);
       SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm aaa", Locale.CANADA);
-      time.setText(timeFormat.format(event.getDate()));
+      String time = timeFormat.format(event.getDate());
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.CANADA);
+
+      if (dateFormat.format(new Date()).equals(dateFormat.format(event.getDate()))) {
+        date.setText(getResources().getString(R.string.today) + " at " + time);
+      } else {
+        date.setText(getResources().getString(R.string.tomorrow) + " at " + time);
+      }
 
       TextView type = (TextView) convertView.findViewById(R.id.type);
       type.setText(event.getType());
@@ -140,19 +140,30 @@ public class HomeActivity extends AppCompatActivity {
       location.setText(event.getLocation());
 
       TextView details = (TextView) convertView.findViewById(R.id.details);
-      details.setText(event.getDetails());
+      if (event.getDetails().isEmpty()) {
+        details.setVisibility(View.GONE);
+      } else {
+        details.setVisibility(View.VISIBLE);
+        details.setText(event.getDetails());
+      }
 
       final TextView numAttending = (TextView) convertView.findViewById(R.id.num_attending);
       numAttending.setText(String.valueOf(event.getNumAttending()) + " attending");
 
-      TextView acceptButton = (TextView) convertView.findViewById(R.id.accept_button);
+      final ImageView check = (ImageView) convertView.findViewById(R.id.check);
+
+      final Button acceptButton = (Button) convertView.findViewById(R.id.accept_button);
       SharedPreferences settings = getSharedPreferences("Events", Context.MODE_PRIVATE);
       final SharedPreferences.Editor editor = settings.edit();
       boolean accepted = settings.getBoolean(event.getObjectId(), false);
       if (accepted) {
-        acceptButton.setTextColor(getResources().getColor(R.color.colorAccent));
+        check.setVisibility(View.VISIBLE);
+        acceptButton.setTextColor(getResources().getColor(R.color.black));
+        numAttending.setTextColor(getResources().getColor(R.color.black));
       } else {
-        acceptButton.setTextColor(getResources().getColor(R.color.blue));
+        check.setVisibility(View.GONE);
+        acceptButton.setTextColor(getResources().getColor(R.color.gray));
+        numAttending.setTextColor(getResources().getColor(R.color.gray));
       }
       acceptButton.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -160,11 +171,11 @@ public class HomeActivity extends AppCompatActivity {
 
           // Change colour.
           TextView button = (TextView) v;
-          final boolean accept = button.getCurrentTextColor() == getResources().getColor(R.color.blue);
+          final boolean accept = button.getCurrentTextColor() == getResources().getColor(R.color.gray);
           if (accept) {
-            button.setTextColor(getResources().getColor(R.color.colorAccent));
+            button.setTextColor(getResources().getColor(R.color.black));
           } else {
-            button.setTextColor(getResources().getColor(R.color.blue));
+            button.setTextColor(getResources().getColor(R.color.gray));
           }
 
           // Change in SharedPreferences.
@@ -179,9 +190,13 @@ public class HomeActivity extends AppCompatActivity {
                 int attending = event.getNumAttending();
                 if (accept) {
                   event.setNumAttending(attending + 1);
+                  check.setVisibility(View.VISIBLE);
+                  numAttending.setTextColor(getResources().getColor(R.color.black));
                   numAttending.setText(String.valueOf(attending + 1) + " attending");
                 } else {
                   event.setNumAttending(attending - 1);
+                  check.setVisibility(View.GONE);
+                  numAttending.setTextColor(getResources().getColor(R.color.gray));
                   numAttending.setText(String.valueOf(attending - 1) + " attending");
                 }
                 event.saveInBackground();

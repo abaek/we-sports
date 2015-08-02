@@ -80,7 +80,10 @@ public class CreateEventActivity extends AppCompatActivity implements
 
     // Current date and time.
     cal = Calendar.getInstance();
-    cal.add(Calendar.HOUR, 2);
+    if (cal.get(Calendar.HOUR_OF_DAY) < 22) {
+      cal.add(Calendar.HOUR, 2);
+      cal.set(Calendar.MINUTE, 0);
+    }
 
     Date date = cal.getTime();
     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
