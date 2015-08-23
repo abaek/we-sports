@@ -23,10 +23,12 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.parse.SendCallback;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -52,6 +54,7 @@ public class CreateEventActivity extends AppCompatActivity implements
   private Calendar cal;
   private Spinner typeSpinner;
   private Spinner dateSpinner;
+  private boolean tomorrow;
 
   private static final int PLACE_PICKER_REQUEST = 1;
 
@@ -72,17 +75,6 @@ public class CreateEventActivity extends AppCompatActivity implements
     mLocationButton = (TextView) findViewById(R.id.location_button);
     mDetailsEdit = (EditText) findViewById(R.id.details_edit);
     errorMessage = (TextView) findViewById(R.id.error_message);
-
-    // Current date and time.
-    cal = Calendar.getInstance();
-    if (cal.get(Calendar.HOUR_OF_DAY) < 22) {
-      cal.add(Calendar.HOUR, 2);
-      cal.set(Calendar.MINUTE, 0);
-    }
-
-    Date date = cal.getTime();
-    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
-    mTimeButton.setText(timeFormat.format(date));
 
     dateSpinner = (Spinner) findViewById(R.id.date_spinner);
     ArrayAdapter<CharSequence> dateAdapter = ArrayAdapter.createFromResource(this,
@@ -125,6 +117,48 @@ public class CreateEventActivity extends AppCompatActivity implements
       public void onNothingSelected(AdapterView<?> parent) {
       }
     });
+    typeSpinner.setSelection(0);
+
+    // Current date and time.
+    cal = Calendar.getInstance();
+    cal.add(Calendar.HOUR, 2);
+    cal.set(Calendar.MINUTE, 0);
+    // Set selection to tomorrow.
+    if (cal.get(Calendar.HOUR_OF_DAY) < 2) {
+      tomorrow = true;
+      dateSpinner.setSelection(1);
+    } else {
+      tomorrow = false;
+      dateSpinner.setSelection(0);
+    }
+
+    dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // Today.
+        if (position == 0) {
+          if (tomorrow) {
+            cal.add(Calendar.DATE, -1);
+            tomorrow = false;
+          }
+        }
+        // Tomorrow.
+        else {
+          if (!tomorrow) {
+            cal.add(Calendar.DATE, 1);
+            tomorrow = true;
+          }
+        }
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+      }
+    });
+
+    Date date = cal.getTime();
+    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
+    mTimeButton.setText(timeFormat.format(date));
   }
 
   @Override
@@ -160,12 +194,6 @@ public class CreateEventActivity extends AppCompatActivity implements
   }
 
   private void createGame() {
-    final boolean tomorrow = dateSpinner.getSelectedItem().toString().equals(getResources().getString(R.string.tomorrow));
-    if (tomorrow) {
-      // Increment by 1 day.
-      cal.add(Calendar.DATE, 1);
-    }
-
     Date now = new Date();
     Date eventDate = cal.getTime();
 
@@ -186,10 +214,9 @@ public class CreateEventActivity extends AppCompatActivity implements
       event.setUuidString();
       event.setDate(cal.getTime());
       event.setDetails(mDetailsEdit.getText().toString());
-      event.setLocation(location);
+      event.setLocationName(location);
       event.setType(type);
-      event.setLat(String.valueOf(latitude));
-      event.setLon(String.valueOf(longitude));
+      event.setPoint(new ParseGeoPoint(latitude, longitude));
       event.setNumAttending(1);
       event.saveInBackground(new SaveCallback() {
         @Override
@@ -204,25 +231,26 @@ public class CreateEventActivity extends AppCompatActivity implements
         }
       });
 
-      // Prevents you from getting a push notification about your own event.
-      ParsePush.unsubscribeInBackground(type, new SaveCallback() {
-        @Override
-        public void done(ParseException e) {
-          ParsePush push = new ParsePush();
-          push.setChannel(type);
-          if (tomorrow) {
-            push.setMessage(type + " tomorrow at " + location + "!");
-          } else {
-            push.setMessage(type + " today at " + location + "!");
-          }
-          push.sendInBackground(new SendCallback() {
-            @Override
-            public void done(ParseException e) {
-              ParsePush.subscribeInBackground(type);
-            }
-          });
-        }
-      });
+      // Find users near a given location.
+      ParseQuery userQuery = UserInfo.getQuery();
+      userQuery.whereWithinKilometers("location", new ParseGeoPoint(latitude, longitude), 1000);
+      userQuery.whereEqualTo("subscriptions", type);
+      // Don't give yourself push notification.
+      userQuery.whereNotEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
+
+      // Find devices associated with these users.
+      ParseQuery pushQuery = ParseInstallation.getQuery();
+      pushQuery.whereMatchesQuery("userInfo", userQuery);
+
+      // Send push notification to query.
+      ParsePush push = new ParsePush();
+      push.setQuery(pushQuery);
+      if (tomorrow) {
+        push.setMessage(type + " tomorrow at " + location + "!");
+      } else {
+        push.setMessage(type + " today at " + location + "!");
+      }
+      push.sendInBackground();
     }
   }
 

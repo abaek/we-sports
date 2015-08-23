@@ -95,12 +95,14 @@ public class HomeActivity extends AppCompatActivity {
 
       @Override
       public void onLoaded(List<Event> list, Exception e) {
-        if (list.isEmpty()) {
-          eventList.setVisibility(View.GONE);
-          nullState.setVisibility(View.VISIBLE);
-        } else {
-          nullState.setVisibility(View.GONE);
-          eventList.setVisibility(View.VISIBLE);
+        if (e == null) {
+          if (list.isEmpty()) {
+            eventList.setVisibility(View.GONE);
+            nullState.setVisibility(View.VISIBLE);
+          } else {
+            nullState.setVisibility(View.GONE);
+            eventList.setVisibility(View.VISIBLE);
+          }
         }
       }
     });
@@ -148,14 +150,14 @@ public class HomeActivity extends AppCompatActivity {
       type.setText(event.getType());
 
       TextView location = (TextView) convertView.findViewById(R.id.location);
-      location.setText(event.getLocation());
+      location.setText(event.getLocationName());
 
       LinearLayout locationButton = (LinearLayout) convertView.findViewById(R.id.location_button);
       locationButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          double latitude = Double.parseDouble(event.getLat());
-          double longitude = Double.parseDouble(event.getLon());
+          double latitude = event.getGeoLocation().getLatitude();
+          double longitude = event.getGeoLocation().getLongitude();
           String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=<%f>,<%f>", latitude, longitude, latitude, longitude);
           Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
           startActivity(intent);

@@ -2,6 +2,7 @@ package wesports.com.wesports;
 
 
 import com.parse.ParseClassName;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -27,6 +28,14 @@ public class Event extends ParseObject {
     put("type", type);
   }
 
+  public ParseGeoPoint getGeoLocation() {
+    return getParseGeoPoint("point");
+  }
+
+  public void setPoint(ParseGeoPoint point) {
+    put("point", point);
+  }
+
   public String getDetails() {
     return getString("details");
   }
@@ -35,28 +44,12 @@ public class Event extends ParseObject {
     put("details", details);
   }
 
-  public String getLat() {
-    return getString("lat");
+  public String getLocationName() {
+    return getString("location_name");
   }
 
-  public void setLat(String lat) {
-    put("lat", lat);
-  }
-
-  public String getLon() {
-    return getString("lon");
-  }
-
-  public void setLon(String lon) {
-    put("lon", lon);
-  }
-
-  public String getLocation() {
-    return getString("location");
-  }
-
-  public void setLocation(String location) {
-    put("location", location);
+  public void setLocationName(String location) {
+    put("location_name", location);
   }
 
   public int getNumAttending() {

@@ -21,4 +21,7 @@
     <string name="im_down">I\'m down</string>
     <string name="null_state_string">No events found.\nYou can change your subscription preferences in settings.</string>
 
+    <!-- Subscription Screen-->
+    <string name="home_location">Home Location</string>
+
 </resources>
