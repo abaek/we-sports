@@ -48,11 +48,12 @@ public class Application extends android.app.Application {
               editor.putBoolean(game, true);
               subscriptionsArray.put(game);
             }
+
+            editor.putString("locationName", "University of Waterloo");
             editor.commit();
 
             // Create userInfo.
             final UserInfo userInfo = new UserInfo();
-            userInfo.setUserId(user.getObjectId());
             userInfo.setLocation(new ParseGeoPoint(43.4667, -80.5328));
             userInfo.setSubscriptions(subscriptionsArray);
             userInfo.saveInBackground(new SaveCallback() {

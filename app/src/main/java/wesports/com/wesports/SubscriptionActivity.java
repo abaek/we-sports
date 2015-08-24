@@ -46,24 +46,12 @@ public class SubscriptionActivity extends AppCompatActivity {
     getSupportActionBar().setTitle(R.string.subscriptions);
     getSupportActionBar().setElevation(10);
 
-    LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
-    homeLocation = (TextView) findViewById(R.id.home_location);
-    final String userId = ParseUser.getCurrentUser().getObjectId();
-    ParseQuery<UserInfo> query = ParseQuery.getQuery("UserInfo");
-    query.whereEqualTo("userId", userId);
-    query.getFirstInBackground(
-            new GetCallback<UserInfo>() {
-              @Override
-              public void done(UserInfo userInfo, ParseException e) {
-                if (e == null) {
-                  homeLocation.setText(userInfo.getLocationName());
-                }
-              }
-            }
-    );
-
     final SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
     final SharedPreferences.Editor editor = settings.edit();
+
+    LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
+    homeLocation = (TextView) findViewById(R.id.home_location);
+    homeLocation.setText(settings.getString("locationName", ""));
 
     // Restore preferences
     for (final String game : getResources().getStringArray(R.array.games_array)) {
@@ -130,20 +118,24 @@ public class SubscriptionActivity extends AppCompatActivity {
       Place place = PlacePicker.getPlace(data, this);
       double latitude = place.getLatLng().latitude;
       double longitude = place.getLatLng().longitude;
-      final String name = (String) place.getName();
       final ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
+      String locationName = (String) place.getName();
 
-      String userId = ParseUser.getCurrentUser().getObjectId();
+      SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
+      SharedPreferences.Editor editor = settings.edit();
+      editor.putString("locationName", locationName);
+      editor.commit();
+      homeLocation.setText(locationName);
+
       ParseQuery<UserInfo> query = ParseQuery.getQuery("UserInfo");
+      String userId = ParseUser.getCurrentUser().getObjectId();
       query.whereEqualTo("userId", userId);
       query.getFirstInBackground(
               new GetCallback<UserInfo>() {
                 @Override
                 public void done(UserInfo userInfo, ParseException e) {
                   if (e == null) {
-                    userInfo.setLocationName(name);
                     userInfo.setLocation(location);
-                    homeLocation.setText(name);
                     userInfo.saveInBackground();
                   }
                 }

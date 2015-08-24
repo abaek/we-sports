@@ -233,7 +233,7 @@ public class CreateEventActivity extends AppCompatActivity implements
 
       // Find users near a given location.
       ParseQuery userQuery = UserInfo.getQuery();
-      userQuery.whereWithinKilometers("location", new ParseGeoPoint(latitude, longitude), 1000);
+      userQuery.whereWithinKilometers("location", new ParseGeoPoint(latitude, longitude), 50);
       userQuery.whereEqualTo("subscriptions", type);
       // Don't give yourself push notification.
       userQuery.whereNotEqualTo("userId", ParseUser.getCurrentUser().getObjectId());

@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/large_vertical_margin"
             android:text="@string/home_location"/>
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
