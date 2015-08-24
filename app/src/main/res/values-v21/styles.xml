@@ -8,6 +8,10 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>
 
+    <style name="TextNormal" parent="@android:style/TextAppearance.Material.Widget.TextView">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 
     <style name="TextMedium" parent="@android:style/TextAppearance.Material.Widget.TextView">
         <item name="android:textColor">@color/black</item>

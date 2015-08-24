@@ -31,23 +31,19 @@
 
                 <TextView
                     android:id="@+id/type"
-                    style="@android:style/TextAppearance.Material.Widget.TextView"
+                    style="@style/TextBig"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/gutter_small"
-                    android:text="Basketball"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/large_text_size"/>
+                    android:text="Basketball"/>
 
                 <TextView
                     android:id="@+id/date"
-                    style="@android:style/TextAppearance.Material.Widget.TextView"
+                    style="@style/TextNormal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/gutter_tiny"
-                    android:text="Today at 6:00 PM"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/regular_text_size"/>
+                    android:text="Today at 6:00 PM"/>
 
             </LinearLayout>
 
@@ -72,26 +68,23 @@
 
                 <TextView
                     android:id="@+id/location"
-                    style="@android:style/TextAppearance.Material.Widget.TextView"
+                    style="@style/TextNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Trillium Park"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/regular_text_size"/>
+                    android:textColor="@color/blue"/>
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/details"
-                style="@android:style/TextAppearance.Material.Widget.TextView"
+                style="@style/TextNormal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gutter_tiny"
                 android:layout_marginLeft="@dimen/gutter_medium"
                 android:layout_marginRight="@dimen/gutter_medium"
                 android:text="Bring your own ball."
-                android:textColor="@color/black"
-                android:textSize="@dimen/regular_text_size"
                 android:textStyle="italic"/>
 
             <View
@@ -129,13 +122,12 @@
 
                 <TextView
                     android:id="@+id/num_attending"
-                    style="@android:style/TextAppearance.Material.Widget.TextView"
+                    style="@style/TextNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/gutter_medium"
                     android:gravity="right"
-                    android:text="2 attending"
-                    android:textSize="@dimen/regular_text_size"/>
+                    android:text="2 attending"/>
 
             </LinearLayout>
 

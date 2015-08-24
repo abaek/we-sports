@@ -23,5 +23,7 @@
 
     <!-- Subscription Screen-->
     <string name="home_location">Home Location</string>
+    <string name="subscription_preferences">Subscription Preferences</string>
+    <string name="change">Change</string>
 
 </resources>

@@ -2,15 +2,15 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/gutter_big">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/subscription_name"
-        style="@style/TextMedium"
+        style="@style/TextNormal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/gutter_medium"
+        android:layout_marginBottom="@dimen/gutter_medium"
+        android:layout_marginRight="@dimen/gutter_small"
         android:layout_weight="1"/>
 
 </LinearLayout>

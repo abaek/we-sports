@@ -49,7 +49,9 @@ public class SubscriptionActivity extends AppCompatActivity {
     final SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
     final SharedPreferences.Editor editor = settings.edit();
 
-    LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
+    LinearLayout subscriptionColumn1 = (LinearLayout) findViewById(R.id.subscription_list_1);
+    LinearLayout subscriptionColumn2 = (LinearLayout) findViewById(R.id.subscription_list_2);
+    Boolean col1 = true;
     homeLocation = (TextView) findViewById(R.id.home_location);
     homeLocation.setText(settings.getString("locationName", ""));
 
@@ -97,7 +99,12 @@ public class SubscriptionActivity extends AppCompatActivity {
       );
 
       view.addView(toggle);
-      layout.addView(view);
+      if (col1) {
+        subscriptionColumn1.addView(view);
+      } else {
+        subscriptionColumn2.addView(view);
+      }
+      col1 = !col1;
     }
   }
 
