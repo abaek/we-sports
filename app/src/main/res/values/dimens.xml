@@ -3,6 +3,7 @@
     <dimen name="gutter_tiny">4dp</dimen>
     <dimen name="gutter_small">8dp</dimen>
     <dimen name="gutter_medium">16dp</dimen>
+    <dimen name="gutter_big">24dp</dimen>
 
     <!--Margins-->
     <dimen name="activity_horizontal_margin">16dp</dimen>

@@ -26,6 +26,14 @@ public class UserInfo extends ParseObject {
     put("location", location);
   }
 
+  public String getLocationName() {
+    return getString("locationName");
+  }
+
+  public void setLocationName(String locationName) {
+    put("locationName", locationName);
+  }
+
   public JSONArray getSubscriptions() {
     return getJSONArray("subscriptions");
   }

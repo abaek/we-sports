@@ -1,19 +1,27 @@
 package wesports.com.wesports;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -21,6 +29,10 @@ import org.json.JSONArray;
 
 
 public class SubscriptionActivity extends AppCompatActivity {
+
+  private TextView homeLocation;
+
+  private static final int PLACE_PICKER_REQUEST = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +47,20 @@ public class SubscriptionActivity extends AppCompatActivity {
     getSupportActionBar().setElevation(10);
 
     LinearLayout layout = (LinearLayout) findViewById(R.id.subscription_list);
+    homeLocation = (TextView) findViewById(R.id.home_location);
+    final String userId = ParseUser.getCurrentUser().getObjectId();
+    ParseQuery<UserInfo> query = ParseQuery.getQuery("UserInfo");
+    query.whereEqualTo("userId", userId);
+    query.getFirstInBackground(
+            new GetCallback<UserInfo>() {
+              @Override
+              public void done(UserInfo userInfo, ParseException e) {
+                if (e == null) {
+                  homeLocation.setText(userInfo.getLocationName());
+                }
+              }
+            }
+    );
 
     final SharedPreferences settings = getSharedPreferences("Subscriptions", Context.MODE_PRIVATE);
     final SharedPreferences.Editor editor = settings.edit();
@@ -46,7 +72,8 @@ public class SubscriptionActivity extends AppCompatActivity {
       TextView text = (TextView) view.findViewById(R.id.subscription_name);
       text.setText(game);
 
-      Switch toggle = (Switch) view.findViewById(R.id.subscription_switch);
+      Switch toggle = new Switch(this);
+
       final boolean subscribed = settings.getBoolean(game, false);
       toggle.setChecked(subscribed);
       toggle.setOnCheckedChangeListener(
@@ -76,14 +103,12 @@ public class SubscriptionActivity extends AppCompatActivity {
                               }
                             }
                           }
-
                   );
-
                 }
               }
-
       );
 
+      view.addView(toggle);
       layout.addView(view);
     }
   }
@@ -97,5 +122,47 @@ public class SubscriptionActivity extends AppCompatActivity {
         return true;
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PLACE_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
+      Place place = PlacePicker.getPlace(data, this);
+      double latitude = place.getLatLng().latitude;
+      double longitude = place.getLatLng().longitude;
+      final String name = (String) place.getName();
+      final ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
+
+      String userId = ParseUser.getCurrentUser().getObjectId();
+      ParseQuery<UserInfo> query = ParseQuery.getQuery("UserInfo");
+      query.whereEqualTo("userId", userId);
+      query.getFirstInBackground(
+              new GetCallback<UserInfo>() {
+                @Override
+                public void done(UserInfo userInfo, ParseException e) {
+                  if (e == null) {
+                    userInfo.setLocationName(name);
+                    userInfo.setLocation(location);
+                    homeLocation.setText(name);
+                    userInfo.saveInBackground();
+                  }
+                }
+              }
+      );
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
+
+  public void changeLocation(View view) {
+    try {
+      PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+      Intent intent = intentBuilder.build(this);
+      startActivityForResult(intent, PLACE_PICKER_REQUEST);
+    } catch (GooglePlayServicesRepairableException e) {
+      e.printStackTrace();
+    } catch (GooglePlayServicesNotAvailableException e) {
+      e.printStackTrace();
+    }
   }
 }
