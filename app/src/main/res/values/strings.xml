@@ -13,7 +13,6 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="details_hint">Details</string>
     <string name="create_event_button">Create Event</string>
-    <string name="lets_play">Let\'s play</string>
     <string name="location_error_message">Please select a location.</string>
     <string name="date_error_message">Please choose a valid time.</string>
 

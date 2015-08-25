@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/gutter_small"
-                android:background="@drawable/background_pressed"
+                android:background="@drawable/background_pressed_card_view"
                 android:clickable="true"
                 android:paddingBottom="@dimen/gutter_tiny"
                 android:paddingRight="@dimen/gutter_small"

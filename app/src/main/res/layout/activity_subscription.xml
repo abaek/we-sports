@@ -78,11 +78,16 @@
 
             <TextView
                 style="@style/TextNormal"
+                android:background="@drawable/background_pressed_gray"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="changeLocation"
                 android:text="@string/change"
-                android:textColor="@color/blue"/>
+                android:textColor="@color/blue"
+                android:paddingBottom="@dimen/gutter_tiny"
+                android:paddingRight="@dimen/gutter_small"
+                android:paddingLeft="@dimen/gutter_small"
+                android:paddingTop="@dimen/gutter_tiny"/>
 
         </LinearLayout>
 
